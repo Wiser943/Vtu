@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Dashboard — NairaFlow</title>
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060c15;--surface:#0b1523;--card:#101e2e;--card2:#162438;--border:#1b3048;--border2:#234060;--text:#ddeeff;--text2:#6a92b8;--text3:#2d4a65;--accent:#0ea5e9;--accent-dim:rgba(14,165,233,.1);--accent-glow:rgba(14,165,233,.2);--green:#10d98a;--green-dim:rgba(16,217,138,.09);--red:#f04f6a;--red-dim:rgba(240,79,106,.09);--amber:#f5a623;--amber-dim:rgba(245,166,35,.09);--purple:#9b5de5;--purple-dim:rgba(155,93,229,.09)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+.sidebar{width:228px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto;z-index:200}
+.sidebar::-webkit-scrollbar{width:0}
+.sb-head{padding:20px 16px;border-bottom:1px solid var(--border)}
+.sb-brand{display:flex;align-items:center;gap:9px}
+.sb-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-mark i{color:#fff;font-size:17px}
+.sb-name{font-size:17px;font-weight:800;letter-spacing:-.5px}
+.sb-name span{color:var(--accent)}
+.sb-role{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:10px;color:var(--accent);background:var(--accent-dim);padding:3px 10px;border-radius:20px;font-weight:700;letter-spacing:1px}
+.live{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.sb-nav{padding:10px 10px;flex:1}
+.sb-lbl{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);padding:0 6px;margin:14px 0 4px;display:block}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 8px;border-radius:9px;font-size:13px;color:var(--text2);cursor:pointer;transition:all .18s;margin-bottom:1px;text-decoration:none;position:relative}
+.sb-item:hover{background:var(--card2);color:var(--text)}
+.sb-item.active{background:var(--accent-dim);color:var(--accent)}
+.sb-item.active::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);width:3px;height:16px;background:var(--accent);border-radius:0 3px 3px 0}
+.sb-item i{font-size:15px;width:16px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px}
+.b-red{background:var(--red-dim);color:var(--red)}.b-amb{background:var(--amber-dim);color:var(--amber)}.b-grn{background:var(--green-dim);color:var(--green)}
+.sb-bottom{padding:12px;border-top:1px solid var(--border)}
+.sb-admin{display:flex;align-items:center;gap:8px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:10px}
+.sb-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.sb-logout{display:flex;align-items:center;gap:9px;width:100%;padding:9px;border-radius:9px;background:none;border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .18s}
+.sb-logout:hover{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+.main-wrap{margin-left:228px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,12,21,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px;height:58px;display:flex;align-items:center;gap:12px}
+.tb-bc{font-size:14px;color:var(--text2);flex:1}
+.tb-bc strong{color:var(--text)}
+.live-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--green);background:var(--green-dim);padding:4px 10px;border-radius:20px;font-weight:700}
+.tb-search{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--text2);width:180px;cursor:pointer}
+.tb-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all .2s;background:var(--accent);color:#fff}
+.tb-btn:hover{background:#38bdf8}
+.tb-icon{width:34px;height:34px;border-radius:8px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:var(--text2);position:relative;transition:all .2s}
+.tb-icon:hover{border-color:var(--accent);color:var(--accent)}
+.tb-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--red);border-radius:50%;border:2px solid var(--bg)}
+.page{padding:20px 24px}
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;position:relative;overflow:hidden;transition:border-color .2s;cursor:pointer}
+.kpi:hover{border-color:var(--border2)}
+.kpi-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0}
+.kpi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.kpi-ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.kpi-chg{font-size:10px;font-weight:700;padding:3px 7px;border-radius:6px}
+.up{background:var(--green-dim);color:var(--green)}.dn{background:var(--red-dim);color:var(--red)}.fl{background:var(--amber-dim);color:var(--amber)}
+.kpi-val{font-size:26px;font-weight:800;letter-spacing:-1.5px}
+.kpi-label{font-size:11px;color:var(--text2);margin-top:4px}
+.kpi-sub{font-size:10px;color:var(--text3);margin-top:5px}
+/* MID */
+.mid-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:20px}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:16px}
+.ph{padding:15px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ph h3{font-size:14px;font-weight:700}
+.ph-btns{display:flex;gap:6px}
+.ph-btn{padding:5px 11px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text2);transition:all .2s;font-family:'Outfit',sans-serif}
+.ph-btn:hover,.ph-btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+/* TABLE */
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{padding:10px 14px;text-align:left;font-size:9px;font-weight:700;color:var(--text3);letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.02);cursor:pointer;transition:background .1s}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+tbody tr:last-child{border-bottom:none}
+td{padding:11px 14px;font-size:12px;vertical-align:middle}
+.td-user{display:flex;align-items:center;gap:8px}
+.td-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.td-name{font-weight:600;font-size:12px}
+.td-email{font-size:10px;color:var(--text3)}
+.td-svc{display:flex;align-items:center;gap:7px}
+.td-si{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.sp{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:6px;font-size:10px;font-weight:700}
+.sp-ok{background:var(--green-dim);color:var(--green)}.sp-fail{background:var(--red-dim);color:var(--red)}.sp-pend{background:var(--amber-dim);color:var(--amber)}
+.act{padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text2);transition:all .2s;font-family:'Outfit',sans-serif}
+.act:hover{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.act.red:hover{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+.act.amb:hover{background:var(--amber-dim);border-color:var(--amber);color:var(--amber)}
+/* RIGHT */
+.right-col{display:flex;flex-direction:column;gap:14px}
+.api-panel,.alerts-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
+.ap-title{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.api-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;margin-bottom:5px;background:var(--surface);border:1px solid var(--border)}
+.api-ic{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.api-name{font-size:12px;font-weight:600;flex:1}
+.api-ping{font-size:10px;color:var(--text3)}
+.api-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-up{background:var(--green);box-shadow:0 0 6px var(--green)}.dot-warn{background:var(--amber)}.dot-dn{background:var(--red)}
+.al-item{display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:9px;margin-bottom:5px;cursor:pointer;transition:background .15s}
+.al-item:hover{background:var(--card2)}
+.al-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.al-title{font-size:12px;font-weight:700}
+.al-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.al-time{font-size:10px;color:var(--text3);margin-top:3px}
+/* BOTTOM */
+.btm-grid{display:grid;grid-template-columns:1.2fr 1fr 0.9fr;gap:16px}
+.chart-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
+.chart-area{display:flex;align-items:flex-end;gap:5px;height:110px;margin-top:14px}
+.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.chart-bar{width:100%;border-radius:5px 5px 0 0;cursor:pointer;transition:height 1s cubic-bezier(.4,0,.2,1),opacity .2s;min-height:4px}
+.chart-bar:hover{opacity:.75}
+.chart-lbl{font-size:9px;color:var(--text3)}
+.netbk-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
+.nk-row{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.nk-name{font-size:12px;font-weight:700;width:56px;flex-shrink:0}
+.nk-bar-w{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden}
+.nk-bar{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.nk-pct{font-size:11px;font-weight:700;width:32px;text-align:right;flex-shrink:0}
+.nk-val{font-size:10px;color:var(--text3);flex-shrink:0}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.sum-item{background:var(--surface);border-radius:8px;padding:10px}
+.sum-val{font-size:16px;font-weight:800}
+.sum-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+.top-panel{background:var(--card);border:1px solid var(--border);border-radius:16px}
+.tu{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.025);cursor:pointer;transition:background .15s}
+.tu:hover{background:rgba(255,255,255,.02)}
+.tu:last-child{border-bottom:none}
+.tu-rank{font-size:10px;color:var(--text3);width:14px;font-weight:700}
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+.mo.open{opacity:1;pointer-events:all}
+.mo-box{background:var(--card);border:1px solid var(--border);border-radius:18px;width:100%;max-width:460px;transform:translateY(20px);transition:transform .25s;max-height:90vh;overflow-y:auto}
+.mo.open .mo-box{transform:translateY(0)}
+.mo-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mo-head h3{font-size:15px;font-weight:700}
+.mo-close{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer}
+.mo-body{padding:20px}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:10px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase}
+.fc{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13px;color:var(--text);font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s}
+.fc:focus{border-color:var(--accent)}
+select.fc{cursor:pointer}
+.save{width:100%;padding:13px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.save:hover{background:#38bdf8}
+/* TOAST */
+.tc{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;display:flex;align-items:center;gap:10px;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,.4);animation:tin .3s ease;border-left:4px solid}
+.toast.success{border-left-color:var(--green)}.toast.error{border-left-color:var(--red)}.toast.info{border-left-color:var(--accent)}
+.toast-msg{font-size:13px;flex:1}
+.toast-x{background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px}
+@keyframes tin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.anim{animation:fadeUp .5s ease both}
+.a1{animation-delay:.06s}.a2{animation-delay:.12s}.a3{animation-delay:.18s}
+@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.mid-grid{grid-template-columns:1fr}.btm-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.sidebar{display:none}.main-wrap{margin-left:0}.btm-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-head">
+    <div class="sb-brand">
+      <div class="sb-mark"><i class="ri-settings-4-line"></i></div>
+      <div class="sb-name">Naira<span>Flow</span></div>
+    </div>
+    <div class="sb-role"><span class="live"></span> SUPER ADMIN</div>
+  </div>
+  <nav class="sb-nav">
+    <span class="sb-lbl">Overview</span>
+    <a href="/admin/dashboard" class="sb-item active"><i class="ri-dashboard-line"></i> Dashboard</a>
+    <a href="/admin/analytics" class="sb-item"><i class="ri-line-chart-line"></i> Analytics</a>
+    <span class="sb-lbl">Operations</span>
+    <a href="/admin/transactions" class="sb-item"><i class="ri-exchange-funds-line"></i> Transactions <span class="sb-badge b-amb"><%= typeof pendingTx !== 'undefined' ? pendingTx : '0' %></span></a>
+    <a href="/admin/pending" class="sb-item"><i class="ri-time-line"></i> Pending <span class="sb-badge b-red"><%= typeof pendingTx !== 'undefined' ? pendingTx : '0' %></span></a>
+    <a href="/admin/refunds" class="sb-item"><i class="ri-refund-2-line"></i> Refunds</a>
+    <span class="sb-lbl">Users</span>
+    <a href="/admin/users" class="sb-item"><i class="ri-group-line"></i> All Users</a>
+    <a href="/admin/resellers" class="sb-item"><i class="ri-store-2-line"></i> Resellers</a>
+    <a href="/admin/flagged" class="sb-item"><i class="ri-flag-line"></i> Flagged</a>
+    <span class="sb-lbl">Config</span>
+    <a href="/admin/pricing" class="sb-item"><i class="ri-price-tag-3-line"></i> Pricing</a>
+    <a href="/admin/promos" class="sb-item"><i class="ri-gift-line"></i> Promos & Banners</a>
+    <a href="/admin/subscriptions" class="sb-item"><i class="ri-vip-crown-line"></i> Subscriptions</a>
+    <span class="sb-lbl">System</span>
+    <a href="/admin/security-logs" class="sb-item"><i class="ri-shield-check-line"></i> Security Logs</a>
+    <a href="/admin/api-status" class="sb-item"><i class="ri-server-line"></i> API Status</a>
+    <a href="/admin/settings" class="sb-item"><i class="ri-settings-4-line"></i> Settings</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-admin">
+      <div class="sb-av">AD</div>
+      <div><div style="font-size:12px;font-weight:600">Admin</div><div style="font-size:10px;color:var(--text3)">Super Admin</div></div>
+    </div>
+    <form action="/auth/logout" method="POST">
+      <button type="submit" class="sb-logout"><i class="ri-logout-box-line"></i> Log Out</button>
+    </form>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+  <header class="topbar">
+    <div class="tb-bc">Admin / <strong>Dashboard</strong></div>
+    <div class="live-pill"><span class="live"></span> Live</div>
+    <div class="tb-search"><i class="ri-search-line"></i>&nbsp; Search users, refs...</div>
+    <button class="tb-btn" onclick="openMo('fundModal')"><i class="ri-add-circle-line"></i> Manual Fund</button>
+    <div class="tb-icon" onclick="openMo('alertsMo')"><i class="ri-notification-3-line"></i><span class="tb-dot"></span></div>
+    <div class="tb-icon"><i class="ri-download-2-line"></i></div>
+  </header>
+
+  <div class="page">
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid anim">
+      <div class="kpi" onclick="location.href='/admin/transactions'">
+        <div class="kpi-bar" style="background:linear-gradient(90deg,var(--green),#86efac)"></div>
+        <div class="kpi-top">
+          <div class="kpi-ic" style="background:var(--green-dim);color:var(--green)"><i class="ri-money-dollar-circle-line"></i></div>
+          <span class="kpi-chg up"><i class="ri-arrow-up-line"></i> <%= typeof yesterdayRevenue !== 'undefined' && yesterdayRevenue > 0 ? Math.round((todayRevenue-yesterdayRevenue)/yesterdayRevenue*100)+'%' : 'New' %></span>
+        </div>
+        <div class="kpi-val" style="color:var(--green)">₦<%= typeof todayRevenue !== 'undefined' ? Math.floor(todayRevenue).toLocaleString() : '0' %></div>
+        <div class="kpi-label">Revenue — Today</div>
+        <div class="kpi-sub">₦<%= typeof monthRevenue !== 'undefined' ? Math.floor(monthRevenue).toLocaleString() : '0' %> this month</div>
+      </div>
+      <div class="kpi" onclick="location.href='/admin/transactions'">
+        <div class="kpi-bar" style="background:linear-gradient(90deg,var(--accent),#7dd3fc)"></div>
+        <div class="kpi-top">
+          <div class="kpi-ic" style="background:var(--accent-dim);color:var(--accent)"><i class="ri-exchange-funds-line"></i></div>
+          <span class="kpi-chg up"><i class="ri-arrow-up-line"></i> Live</span>
+        </div>
+        <div class="kpi-val" style="color:var(--accent)"><%= typeof todayCount !== 'undefined' ? todayCount.toLocaleString() : '0' %></div>
+        <div class="kpi-label">Transactions — Today</div>
+        <div class="kpi-sub">Avg ₦<%= typeof todayCount !== 'undefined' && todayCount > 0 ? Math.floor(todayRevenue/todayCount).toLocaleString() : '0' %> per tx</div>
+      </div>
+      <div class="kpi" onclick="location.href='/admin/users'">
+        <div class="kpi-bar" style="background:linear-gradient(90deg,var(--purple),#d8b4fe)"></div>
+        <div class="kpi-top">
+          <div class="kpi-ic" style="background:var(--purple-dim);color:var(--purple)"><i class="ri-group-line"></i></div>
+          <span class="kpi-chg up"><i class="ri-add-line"></i> +<%= typeof newTodayUsers !== 'undefined' ? newTodayUsers : '0' %></span>
+        </div>
+        <div class="kpi-val" style="color:var(--purple)"><%= typeof totalUsers !== 'undefined' ? totalUsers.toLocaleString() : '0' %></div>
+        <div class="kpi-label">Total Users</div>
+        <div class="kpi-sub"><%= typeof newTodayUsers !== 'undefined' ? newTodayUsers : '0' %> new today</div>
+      </div>
+      <div class="kpi" onclick="location.href='/admin/pending'">
+        <div class="kpi-bar" style="background:linear-gradient(90deg,var(--red),#fca5a5)"></div>
+        <div class="kpi-top">
+          <div class="kpi-ic" style="background:var(--red-dim);color:var(--red)"><i class="ri-error-warning-line"></i></div>
+          <span class="kpi-chg <%= typeof pendingTx !== 'undefined' && pendingTx > 0 ? 'fl' : 'up' %>"><%= typeof pendingTx !== 'undefined' && pendingTx > 0 ? 'Action needed' : 'All clear' %></span>
+        </div>
+        <div class="kpi-val" style="color:var(--red)"><%= typeof pendingTx !== 'undefined' ? pendingTx : '0' %></div>
+        <div class="kpi-label">Pending Resolutions</div>
+        <div class="kpi-sub">Needs manual review</div>
+      </div>
+    </div>
+
+    <!-- MID GRID -->
+    <div class="mid-grid anim a1">
+      <!-- LIVE TRANSACTIONS TABLE -->
+      <div class="panel">
+        <div class="ph">
+          <h3>Live Transactions</h3>
+          <div class="ph-btns">
+            <button class="ph-btn active" data-filter="all">All</button>
+            <button class="ph-btn" data-filter="data">Data</button>
+            <button class="ph-btn" data-filter="airtime">Airtime</button>
+            <button class="ph-btn" data-filter="bills">Bills</button>
+            <a href="/admin/transactions?export=csv" class="ph-btn" style="text-decoration:none"><i class="ri-download-2-line"></i> Export</a>
+          </div>
+        </div>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr><th>User</th><th>Service</th><th>Amount</th><th>Status</th><th>Time</th><th>Action</th></tr>
+            </thead>
+            <tbody id="txTableBody">
+              <% if(typeof recentTx !== 'undefined' && recentTx.length > 0) { %>
+              <% recentTx.forEach(tx => { %>
+              <tr data-type="<%= tx.type %>">
+                <td>
+                  <div class="td-user">
+                    <div class="td-av" style="background:var(--accent-dim);color:var(--accent)"><%= tx.userId ? tx.userId.fullName?.charAt(0) || 'U' : 'U' %></div>
+                    <div>
+                      <div class="td-name"><%= tx.userId?.fullName || 'Unknown' %></div>
+                      <div class="td-email"><%= tx.userId?.email || '' %></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="td-svc">
+                    <div class="td-si" style="background:var(--accent-dim);color:var(--accent)"><i class="ri-exchange-funds-line"></i></div>
+                    <div><div style="font-size:12px;font-weight:500"><%= tx.type.replace('_',' ') %></div><div class="td-email"><%= tx.serviceDetails?.phone || '' %></div></div>
+                  </div>
+                </td>
+                <td style="font-weight:700">₦<%= tx.amount.toLocaleString() %></td>
+                <td><span class="sp sp-<%= tx.status==='success'?'ok':tx.status==='failed'?'fail':'pend' %>"><%= tx.status %></span></td>
+                <td style="color:var(--text2);font-size:11px"><%= new Date(tx.createdAt).toLocaleTimeString() %></td>
+                <td>
+                  <% if(tx.status==='failed') { %>
+                  <button class="act red" onclick="refundTx('<%= tx._id %>','₦<%= tx.amount.toLocaleString() %>')">Refund</button>
+                  <% } else if(tx.status==='pending'||tx.status==='processing') { %>
+                  <button class="act amb" onclick="retryTx('<%= tx._id %>')">Retry</button>
+                  <% } else { %>
+                  <button class="act" onclick="location.href='/admin/transactions'">View</button>
+                  <% } %>
+                </td>
+              </tr>
+              <% }) %>
+              <% } else { %>
+              <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text3)"><i class="ri-inbox-line" style="font-size:30px;display:block;margin-bottom:8px"></i>No transactions yet</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:12px 18px;border-top:1px solid var(--border)">
+          <a href="/admin/transactions" style="font-size:12px;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:5px">View all transactions <i class="ri-arrow-right-line"></i></a>
+        </div>
+      </div>
+
+      <!-- RIGHT: API STATUS + ALERTS -->
+      <div class="right-col">
+        <div class="api-panel">
+          <div class="ap-title"><span><i class="ri-server-line"></i> API Status</span><a href="/admin/api-status" style="font-size:11px;color:var(--accent);text-decoration:none">Details</a></div>
+          <div class="api-row">
+            <div class="api-ic" style="background:var(--accent-dim);color:var(--accent)"><i class="ri-flashlight-line"></i></div>
+            <div style="flex:1"><div class="api-name">VTpass</div><div class="api-ping">Ping: 142ms</div></div>
+            <span style="font-size:10px;color:var(--green);font-weight:700">99.9%</span>
+            <div class="api-dot dot-up"></div>
+          </div>
+          <div class="api-row">
+            <div class="api-ic" style="background:var(--green-dim);color:var(--green)"><i class="ri-bank-card-line"></i></div>
+            <div style="flex:1"><div class="api-name">Korapay</div><div class="api-ping">Ping: 89ms</div></div>
+            <span style="font-size:10px;color:var(--green);font-weight:700">100%</span>
+            <div class="api-dot dot-up"></div>
+          </div>
+          <div class="api-row">
+            <div class="api-ic" style="background:var(--amber-dim);color:var(--amber)"><i class="ri-mail-send-line"></i></div>
+            <div style="flex:1"><div class="api-name">Resend</div><div class="api-ping">Ping: 201ms</div></div>
+            <span style="font-size:10px;color:var(--green);font-weight:700">99.7%</span>
+            <div class="api-dot dot-up"></div>
+          </div>
+          <div class="api-row">
+            <div class="api-ic" style="background:var(--red-dim);color:var(--red)"><i class="ri-database-2-line"></i></div>
+            <div style="flex:1"><div class="api-name">MongoDB</div><div class="api-ping">Connected</div></div>
+            <span style="font-size:10px;color:var(--green);font-weight:700">Online</span>
+            <div class="api-dot dot-up"></div>
+          </div>
+        </div>
+
+        <div class="alerts-panel">
+          <div class="ap-title">
+            <span><i class="ri-error-warning-line"></i> Pending Alerts</span>
+            <span style="background:var(--red-dim);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px"><%= typeof pendingTx !== 'undefined' ? pendingTx : '0' %></span>
+          </div>
+          <% if(typeof pendingTx !== 'undefined' && pendingTx > 0) { %>
+          <div class="al-item">
+            <div class="al-ic" style="background:var(--red-dim);color:var(--red)"><i class="ri-alarm-warning-line"></i></div>
+            <div>
+              <div class="al-title"><%= pendingTx %> Pending Transaction<%= pendingTx > 1 ? 's' : '' %></div>
+              <div class="al-sub">Requires manual action or retry</div>
+              <div class="al-time">Review now</div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color:var(--text3);font-size:18px;margin-top:4px"></i>
+          </div>
+          <% } %>
+          <div class="al-item" onclick="location.href='/admin/security-logs'">
+            <div class="al-ic" style="background:var(--amber-dim);color:var(--amber)"><i class="ri-shield-keyhole-line"></i></div>
+            <div>
+              <div class="al-title">Review Security Logs</div>
+              <div class="al-sub">Check for suspicious activity</div>
+              <div class="al-time">Routine check</div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color:var(--text3);font-size:18px;margin-top:4px"></i>
+          </div>
+          <div class="al-item" onclick="location.href='/admin/pricing'">
+            <div class="al-ic" style="background:var(--accent-dim);color:var(--accent)"><i class="ri-price-tag-3-line"></i></div>
+            <div>
+              <div class="al-title">Update Pricing</div>
+              <div class="al-sub">Review data & airtime prices</div>
+              <div class="al-time">Recommended weekly</div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color:var(--text3);font-size:18px;margin-top:4px"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM GRID -->
+    <div class="btm-grid anim a2">
+      <!-- REVENUE CHART -->
+      <div class="chart-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <h3 style="font-size:14px;font-weight:700">Revenue — Last 7 Days</h3>
+          <span style="font-size:11px;color:var(--green)"><i class="ri-arrow-up-line"></i> This week</span>
+        </div>
+        <div class="chart-area" id="chartArea"></div>
+        <div id="chartLabels" style="display:flex;justify-content:space-around;margin-top:4px"></div>
+      </div>
+
+      <!-- NETWORK BREAKDOWN -->
+      <div class="netbk-panel">
+        <h3 style="font-size:14px;font-weight:700;margin-bottom:14px">Network Split</h3>
+        <% const networks=[{name:'MTN',pct:62,color:'#f5a623',val:'₦2.6M'},{name:'Airtel',pct:20,color:'#f87171',val:'₦840K'},{name:'Glo',pct:12,color:'#10d98a',val:'₦504K'},{name:'9mobile',pct:6,color:'#0ea5e9',val:'₦252K'}] %>
+        <% networks.forEach(n => { %>
+        <div class="nk-row">
+          <div class="nk-name" style="color:<%= n.color %>"><%= n.name %></div>
+          <div class="nk-bar-w"><div class="nk-bar" data-w="<%= n.pct %>" style="width:0%;background:<%= n.color %>"></div></div>
+          <div class="nk-pct" style="color:<%= n.color %>"><%= n.pct %>%</div>
+          <div class="nk-val"><%= n.val %></div>
+        </div>
+        <% }) %>
+        <div class="sum-grid">
+          <div class="sum-item"><div class="sum-val">₦<%= typeof todayRevenue !== 'undefined' ? Math.floor(todayRevenue).toLocaleString() : '0' %></div><div class="sum-lbl">Today Revenue</div></div>
+          <div class="sum-item"><div class="sum-val" style="color:var(--green)">₦<%= typeof todayRevenue !== 'undefined' ? Math.floor(todayRevenue*0.03).toLocaleString() : '0' %></div><div class="sum-lbl">Est. Profit (3%)</div></div>
+        </div>
+      </div>
+
+      <!-- TOP USERS -->
+      <div class="top-panel">
+        <div class="ph"><h3>Top Users Today</h3><a href="/admin/users" style="font-size:11px;color:var(--accent);text-decoration:none">See all</a></div>
+        <% if(typeof topUsers !== 'undefined' && topUsers.length > 0) { %>
+        <% topUsers.forEach((u,i) => { %>
+        <div class="tu" onclick="location.href='/admin/users/<%= u._id %>'">
+          <div class="tu-rank">#<%= i+1 %></div>
+          <div class="td-av" style="background:var(--accent-dim);color:var(--accent)"><%= u.user[0]?.fullName?.charAt(0)||'U' %></div>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600"><%= u.user[0]?.fullName||'Unknown' %></div>
+            <div style="font-size:10px;color:var(--text3)"><%= u.count %> transactions</div>
+          </div>
+          <div style="font-size:13px;font-weight:700;color:var(--green)">₦<%= Math.floor(u.total).toLocaleString() %></div>
+        </div>
+        <% }) %>
+        <% } else { %>
+        <div style="padding:30px;text-align:center;color:var(--text3);font-size:12px">No data yet today</div>
+        <% } %>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+</div><!-- /main -->
+
+<!-- FUND USER MODAL -->
+<div class="mo" id="fundModal">
+  <div class="mo-box">
+    <div class="mo-head"><h3><i class="ri-add-circle-line" style="color:var(--accent)"></i> Manual Fund User</h3><button class="mo-close" onclick="closeMo('fundModal')"><i class="ri-close-line"></i></button></div>
+    <div class="mo-body">
+      <div class="fg"><label class="fl">User Email / Phone</label><input type="text" class="fc" id="fundUserSearch" placeholder="Search user..."></div>
+      <div class="fg"><label class="fl">Amount (₦)</label><input type="number" class="fc" id="fundAmt" placeholder="Enter amount" min="1"></div>
+      <div class="fg"><label class="fl">Note</label><input type="text" class="fc" id="fundNote" placeholder="Reason for funding..."></div>
+      <button class="save" onclick="doAdminFund()"><i class="ri-send-plane-line"></i> Fund Wallet</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="tc" id="tc"></div>
+
+<script>
+// Sidebar active
+document.querySelectorAll('.sb-item').forEach(i=>{
+  i.addEventListener('click',function(){
+    if(this.tagName==='A')return;
+    document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Modal
+function openMo(id){document.getElementById(id).classList.add('open')}
+function closeMo(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')}));
+
+// Toast
+function toast(msg,type='info'){
+  const c=document.getElementById('tc');
+  const icons={success:'ri-checkbox-circle-line',error:'ri-close-circle-line',info:'ri-information-line'};
+  const t=document.createElement('div');t.className=`toast ${type}`;
+  t.innerHTML=`<i class="${icons[type]}" style="font-size:18px;color:var(--${type==='success'?'green':type==='error'?'red':'accent'})"></i><span class="toast-msg">${msg}</span><button class="toast-x" onclick="this.closest('.toast').remove()"><i class="ri-close-line"></i></button>`;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(),4500);
+}
+
+// Filter tabs
+document.querySelectorAll('.ph-btn[data-filter]').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.ph-btn[data-filter]').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    const f=this.dataset.filter;
+    document.querySelectorAll('#txTableBody tr[data-type]').forEach(r=>{
+      const t=r.dataset.type;
+      const show=f==='all'||(f==='bills'&&['cable','electricity','exam'].includes(t))||t===f;
+      r.style.display=show?'':'none';
+    });
+  });
+});
+
+// Refund
+async function refundTx(id,amount){
+  if(!confirm(`Refund ${amount} to user wallet?`))return;
+  const r=await fetch(`/admin/transactions/${id}/refund`,{method:'POST'});
+  const d=await r.json();
+  toast(d.message,d.success?'success':'error');
+  if(d.success)setTimeout(()=>location.reload(),1500);
+}
+
+// Retry
+async function retryTx(id){
+  const r=await fetch(`/admin/pending/${id}/retry`,{method:'POST'});
+  const d=await r.json();
+  toast(d.message,d.success?'success':'error');
+}
+
+// Admin fund
+async function doAdminFund(){
+  toast('Search user first — use /admin/users to find user ID','info');
+}
+
+// Revenue chart
+const chartData=[
+  {day:'Mon',val:2.1},{day:'Tue',val:3.4},{day:'Wed',val:2.8},
+  {day:'Thu',val:4.1},{day:'Fri',val:3.6},{day:'Sat',val:5.2},{day:'Sun',val:4.2}
+];
+const maxVal=Math.max(...chartData.map(d=>d.val));
+const area=document.getElementById('chartArea');
+const labelsEl=document.getElementById('chartLabels');
+chartData.forEach((d,i)=>{
+  const col=document.createElement('div');col.className='chart-col';
+  const bar=document.createElement('div');
+  bar.className='chart-bar';
+  const isToday=i===chartData.length-1;
+  bar.style.cssText=`height:0px;background:${isToday?'linear-gradient(180deg,var(--green),rgba(16,217,138,.3))':'linear-gradient(180deg,var(--accent),rgba(14,165,233,.3))'};`;
+  bar.title=`₦${d.val}M`;
+  col.appendChild(bar);
+  area.appendChild(col);
+  const lbl=document.createElement('span');lbl.style.cssText='font-size:9px;color:var(--text3)';lbl.textContent=d.day;
+  labelsEl.appendChild(lbl);
+  setTimeout(()=>{bar.style.height=((d.val/maxVal)*104)+'px'},100+i*80);
+});
+
+// Network bars animation
+setTimeout(()=>{
+  document.querySelectorAll('.nk-bar[data-w]').forEach(b=>{b.style.width=b.dataset.w+'%'});
+},400);
+
+// Flash messages
+<% if(locals.success && success.length > 0) { %>toast('<%= success[0] %>','success');<% } %>
+<% if(locals.error && error.length > 0) { %>toast('<%= error[0] %>','error');<% } %>
+</script>
+</body>
+</html>

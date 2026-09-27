@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> — <%= appName %></title>
+  <meta name="description" content="Buy data, airtime and pay bills instantly at the best rates">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/images/icon-192.png">
+
+  <!-- Remix Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #090f1a;
+      --surface: #0e1623;
+      --card: #13202f;
+      --card2: #182840;
+      --border: #1e3048;
+      --border2: #253a58;
+      --text: #e8f0fe;
+      --text2: #7a9bc4;
+      --text3: #3d5c7a;
+      --primary: #5b6af0;
+      --primary2: #818cf8;
+      --primary-dim: rgba(91,106,240,.12);
+      --primary-glow: rgba(91,106,240,.25);
+      --green: #22d3a5;
+      --green-dim: rgba(34,211,165,.1);
+      --red: #f05f6e;
+      --red-dim: rgba(240,95,110,.1);
+      --amber: #f5a623;
+      --amber-dim: rgba(245,166,35,.1);
+      --blue: #38b2f8;
+      --blue-dim: rgba(56,178,248,.1);
+      --purple: #a855f7;
+      --purple-dim: rgba(168,85,247,.1);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 250px; flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      position: fixed; height: 100vh;
+      overflow-y: auto; z-index: 200;
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .sidebar::-webkit-scrollbar { width: 0; }
+
+    .sb-logo {
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sb-logo-mark {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .sb-logo-mark i { color: #fff; font-size: 18px; }
+    .sb-logo-text { font-size: 18px; font-weight: 800; letter-spacing: -.5px; }
+    .sb-logo-text span { color: var(--primary2); }
+    .sb-logo-sub { font-size: 9px; color: var(--text3); letter-spacing: 2px; text-transform: uppercase; margin-top: 1px; }
+
+    .sb-user {
+      margin: 14px 14px 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sb-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--amber));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .sb-user-info { flex: 1; min-width: 0; }
+    .sb-user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sb-user-role {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      padding: 1px 7px; border-radius: 20px; display: inline-block; margin-top: 2px;
+    }
+    .role-user { background: var(--primary-dim); color: var(--primary2); }
+    .role-reseller { background: var(--amber-dim); color: var(--amber); }
+    .role-admin { background: var(--red-dim); color: var(--red); }
+
+    .sb-nav { padding: 14px; flex: 1; }
+    .sb-section { margin-bottom: 4px; }
+    .sb-section-label {
+      font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase;
+      color: var(--text3); padding: 0 8px; margin: 14px 0 5px;
+      display: block;
+    }
+    .sb-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 10px; border-radius: 10px;
+      font-size: 13px; color: var(--text2);
+      cursor: pointer; transition: all .18s;
+      margin-bottom: 1px; text-decoration: none;
+      position: relative;
+    }
+    .sb-item:hover { background: var(--card2); color: var(--text); }
+    .sb-item.active { background: var(--primary-dim); color: var(--primary2); }
+    .sb-item.active::after {
+      content: ''; position: absolute; right: -14px; top: 50%;
+      transform: translateY(-50%);
+      width: 3px; height: 18px; background: var(--primary2);
+      border-radius: 4px 0 0 4px;
+    }
+    .sb-item i { font-size: 17px; width: 18px; text-align: center; flex-shrink: 0; }
+    .sb-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 20px;
+    }
+    .badge-red { background: var(--red-dim); color: var(--red); }
+    .badge-green { background: var(--green-dim); color: var(--green); }
+    .badge-amber { background: var(--amber-dim); color: var(--amber); }
+    .badge-primary { background: var(--primary-dim); color: var(--primary2); }
+
+    .sb-bottom {
+      padding: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .sb-logout {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px; border-radius: 10px;
+      font-size: 13px; color: var(--text2);
+      cursor: pointer; transition: all .18s;
+      background: none; border: 1px solid var(--border);
+      width: 100%; font-family: 'Outfit', sans-serif;
+    }
+    .sb-logout:hover { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+
+    /* ── MAIN WRAP ── */
+    .main-wrap {
+      margin-left: 250px; flex: 1;
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(9,15,26,.92); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px; height: 62px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .hamburger {
+      display: none; background: none; border: none;
+      color: var(--text2); font-size: 22px; cursor: pointer;
+      padding: 4px;
+    }
+    .topbar-title { font-size: 17px; font-weight: 700; flex: 1; }
+    .tb-search {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px 14px;
+      font-size: 13px; color: var(--text2); cursor: pointer;
+      transition: border-color .2s; width: 200px;
+    }
+    .tb-search:hover { border-color: var(--primary); }
+    .tb-search i { font-size: 15px; }
+    .tb-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; cursor: pointer; transition: all .2s;
+      position: relative; color: var(--text2); text-decoration: none;
+    }
+    .tb-icon:hover { border-color: var(--primary); color: var(--primary2); }
+    .tb-notif-count {
+      position: absolute; top: -4px; right: -4px;
+      min-width: 18px; height: 18px;
+      background: var(--red); color: #fff;
+      font-size: 10px; font-weight: 700;
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--bg); padding: 0 4px;
+    }
+
+    /* ── SEASONAL BANNER ── */
+    .seasonal-banner {
+      margin: 16px 28px 0;
+      border-radius: 14px; padding: 14px 18px;
+      display: flex; align-items: center; gap: 14px;
+      position: relative; overflow: hidden;
+      cursor: pointer; transition: opacity .2s;
+      animation: fadeSlideDown .5s ease;
+    }
+    .seasonal-banner:hover { opacity: .9; }
+    .seasonal-banner.christmas { background: linear-gradient(135deg, #0d3b22, #0a4a1c); border: 1px solid #1a6b35; }
+    .seasonal-banner.newyear { background: linear-gradient(135deg, #1a1040, #0d0d2b); border: 1px solid #3d2d80; }
+    .seasonal-banner.promo { background: linear-gradient(135deg, #2d1a00, #3d2200); border: 1px solid #8a5500; }
+    .seasonal-banner.info { background: linear-gradient(135deg, #0a1f40, #0d2a55); border: 1px solid #1e4080; }
+    .sb-banner-icon { font-size: 28px; flex-shrink: 0; }
+    .sb-banner-content { flex: 1; }
+    .sb-banner-title { font-size: 14px; font-weight: 700; }
+    .sb-banner-text { font-size: 12px; opacity: .8; margin-top: 2px; }
+    .sb-banner-cta {
+      font-size: 12px; font-weight: 700; padding: 7px 16px;
+      border-radius: 8px; border: none; cursor: pointer;
+      font-family: 'Outfit', sans-serif; flex-shrink: 0;
+      transition: all .2s;
+    }
+    .sb-banner-close {
+      background: none; border: none; color: rgba(255,255,255,.5);
+      font-size: 18px; cursor: pointer; padding: 4px; flex-shrink: 0;
+    }
+
+    /* confetti effect */
+    .seasonal-banner.christmas::before,
+    .seasonal-banner.newyear::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,.06) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+    }
+
+    /* ── PAGE CONTENT ── */
+    .page { padding: 24px 28px; flex: 1; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 18px;
+    }
+    .card-head {
+      padding: 18px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-head h3 { font-size: 14px; font-weight: 700; }
+    .card-body { padding: 20px; }
+
+    /* ── STAT PILL ── */
+    .trend-up { background: var(--green-dim); color: var(--green); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+    .trend-down { background: var(--red-dim); color: var(--red); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+    .trend-flat { background: var(--amber-dim); color: var(--amber); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+
+    /* ── BUTTONS ── */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; font-family: 'Outfit', sans-serif; transition: all .2s; text-decoration: none; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary2); transform: translateY(-1px); box-shadow: 0 4px 20px var(--primary-glow); }
+    .btn-ghost { background: var(--primary-dim); color: var(--primary2); border: 1px solid rgba(91,106,240,.2); }
+    .btn-ghost:hover { background: rgba(91,106,240,.2); }
+    .btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid rgba(240,95,110,.2); }
+    .btn-sm { padding: 7px 14px; font-size: 12px; border-radius: 8px; }
+
+    /* ── FORM ── */
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 7px; letter-spacing: .5px; text-transform: uppercase; }
+    .form-control {
+      width: 100%; background: var(--surface);
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 11px 14px; font-size: 14px; color: var(--text);
+      font-family: 'Outfit', sans-serif; transition: border-color .2s;
+      outline: none;
+    }
+    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-dim); }
+    .form-control::placeholder { color: var(--text3); }
+    select.form-control { cursor: pointer; }
+
+    /* ── STATUS PILLS ── */
+    .status { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .status-success { background: var(--green-dim); color: var(--green); }
+    .status-failed { background: var(--red-dim); color: var(--red); }
+    .status-pending { background: var(--amber-dim); color: var(--amber); }
+    .status-processing { background: var(--blue-dim); color: var(--blue); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.7);
+      backdrop-filter: blur(6px); z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; width: 100%; max-width: 460px;
+      transform: translateY(20px); transition: transform .25s;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-head {
+      padding: 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-head h3 { font-size: 16px; font-weight: 700; }
+    .modal-close { background: none; border: none; color: var(--text2); font-size: 22px; cursor: pointer; }
+    .modal-body { padding: 20px; }
+
+    /* ── PIN INPUT ── */
+    .pin-grid { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+    .pin-input {
+      width: 52px; height: 56px; text-align: center;
+      background: var(--surface); border: 2px solid var(--border);
+      border-radius: 12px; font-size: 22px; color: var(--text);
+      font-family: 'Outfit', sans-serif; font-weight: 700;
+      transition: border-color .2s; outline: none;
+    }
+    .pin-input:focus { border-color: var(--primary); }
+
+    /* ── TOAST ── */
+    .toast-container {
+      position: fixed; bottom: 24px; right: 24px;
+      z-index: 9999; display: flex; flex-direction: column; gap: 10px;
+    }
+    .toast {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 18px;
+      display: flex; align-items: center; gap: 12px;
+      min-width: 300px; max-width: 380px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+      animation: toastIn .3s ease;
+      border-left: 4px solid;
+    }
+    .toast.success { border-left-color: var(--green); }
+    .toast.error { border-left-color: var(--red); }
+    .toast.info { border-left-color: var(--blue); }
+    .toast-icon { font-size: 20px; }
+    .toast-msg { font-size: 13px; flex: 1; line-height: 1.4; }
+    .toast-close { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ── PWA INSTALL BANNER ── */
+    .pwa-banner {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 18px; padding: 18px 20px;
+      width: calc(100% - 32px); max-width: 420px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.5);
+      z-index: 500; display: none;
+      animation: slideUp .4s ease;
+    }
+    .pwa-banner.show { display: flex; gap: 14px; align-items: center; }
+    .pwa-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0;
+    }
+    .pwa-text { flex: 1; }
+    .pwa-title { font-size: 14px; font-weight: 700; }
+    .pwa-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+    .pwa-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .pwa-install-btn {
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 8px; padding: 8px 16px;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+    }
+    .pwa-dismiss-btn {
+      background: none; border: 1px solid var(--border);
+      color: var(--text2); border-radius: 8px; padding: 8px 12px;
+      font-size: 12px; cursor: pointer; font-family: 'Outfit', sans-serif;
+    }
+    .pwa-close { position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; }
+
+    /* ── OVERLAY OVERLAY ── */
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.6); z-index: 150;
+    }
+
+    /* ── BOTTOM NAV (mobile) ── */
+    .bottom-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--surface); border-top: 1px solid var(--border);
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+      z-index: 300; justify-content: space-around;
+    }
+    .bn-item {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      cursor: pointer; color: var(--text3); font-size: 10px; font-weight: 500;
+      padding: 4px 14px; border-radius: 10px; transition: color .2s; min-width: 56px;
+    }
+    .bn-item.active { color: var(--primary2); }
+    .bn-item i { font-size: 22px; }
+    .bn-fab {
+      width: 50px; height: 50px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; margin-top: -18px;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      cursor: pointer; border: 3px solid var(--bg);
+      flex-direction: column; gap: 3px; font-size: 10px; font-weight: 700;
+    }
+    .bn-fab i { font-size: 22px; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+
+    .anim-up { animation: fadeSlideUp .5s ease both; }
+    .anim-up-1 { animation: fadeSlideUp .5s .08s ease both; }
+    .anim-up-2 { animation: fadeSlideUp .5s .16s ease both; }
+    .anim-up-3 { animation: fadeSlideUp .5s .24s ease both; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .main-wrap { margin-left: 0; }
+      .topbar { padding: 0 16px; }
+      .hamburger { display: flex; align-items: center; }
+      .tb-search { display: none; }
+      .page { padding: 16px; padding-bottom: 90px; }
+      .bottom-nav { display: flex; }
+      .seasonal-banner { margin: 12px 16px 0; }
+    }
+  </style>
+
+  <%- typeof extraHead !== 'undefined' ? extraHead : '' %>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark"><i class="ri-flashlight-fill"></i></div>
+    <div>
+      <div class="sb-logo-text">Naira<span>Flow</span></div>
+      <div class="sb-logo-sub">VTU Platform</div>
+    </div>
+  </div>
+
+  <% if (user) { %>
+  <div class="sb-user">
+    <div class="sb-avatar"><%= user.fullName.split(' ').map(n=>n[0]).join('').toUpperCase().substr(0,2) %></div>
+    <div class="sb-user-info">
+      <div class="sb-user-name"><%= user.fullName.split(' ')[0] %></div>
+      <span class="sb-user-role role-<%= user.role %>"><%= user.role.toUpperCase() %></span>
+    </div>
+  </div>
+  <% } %>
+
+  <nav class="sb-nav">
+    <% if (user && user.role === 'user') { %>
+    <span class="sb-section-label">Menu</span>
+    <a href="/user/dashboard" class="sb-item <%= page === 'dashboard' ? 'active' : '' %>"><i class="ri-dashboard-line"></i> Dashboard</a>
+    <a href="/user/wallet" class="sb-item <%= page === 'wallet' ? 'active' : '' %>"><i class="ri-wallet-3-line"></i> Wallet</a>
+    <span class="sb-section-label">Services</span>
+    <a href="/user/airtime" class="sb-item <%= page === 'airtime' ? 'active' : '' %>"><i class="ri-phone-line"></i> Airtime</a>
+    <a href="/user/data" class="sb-item <%= page === 'data' ? 'active' : '' %>"><i class="ri-signal-wifi-line"></i> Data Bundles <span class="sb-badge badge-red">HOT</span></a>
+    <a href="/user/cable" class="sb-item <%= page === 'cable' ? 'active' : '' %>"><i class="ri-tv-2-line"></i> Cable TV</a>
+    <a href="/user/electricity" class="sb-item <%= page === 'electricity' ? 'active' : '' %>"><i class="ri-flashlight-line"></i> Electricity</a>
+    <a href="/user/exam" class="sb-item <%= page === 'exam' ? 'active' : '' %>"><i class="ri-book-open-line"></i> Exam Pins</a>
+    <a href="/user/transfer" class="sb-item <%= page === 'transfer' ? 'active' : '' %>"><i class="ri-send-plane-line"></i> Transfer</a>
+    <span class="sb-section-label">Account</span>
+    <a href="/user/transactions" class="sb-item <%= page === 'transactions' ? 'active' : '' %>"><i class="ri-list-check"></i> Transactions</a>
+    <a href="/user/referrals" class="sb-item <%= page === 'referrals' ? 'active' : '' %>"><i class="ri-group-line"></i> Referrals</a>
+    <a href="/user/subscription" class="sb-item <%= page === 'subscription' ? 'active' : '' %>"><i class="ri-vip-crown-line"></i> Subscription</a>
+    <a href="/user/security" class="sb-item <%= page === 'security' ? 'active' : '' %>"><i class="ri-shield-keyhole-line"></i> Security</a>
+    <a href="/user/settings" class="sb-item <%= page === 'settings' ? 'active' : '' %>"><i class="ri-settings-4-line"></i> Settings</a>
+
+    <% } else if (user && user.role === 'reseller') { %>
+    <span class="sb-section-label">Overview</span>
+    <a href="/reseller/dashboard" class="sb-item <%= page === 'dashboard' ? 'active' : '' %>"><i class="ri-dashboard-line"></i> Dashboard</a>
+    <a href="/reseller/wallet" class="sb-item <%= page === 'wallet' ? 'active' : '' %>"><i class="ri-wallet-3-line"></i> Wallet</a>
+    <span class="sb-section-label">Buy Services</span>
+    <a href="/reseller/airtime" class="sb-item <%= page === 'airtime' ? 'active' : '' %>"><i class="ri-phone-line"></i> Airtime</a>
+    <a href="/reseller/data" class="sb-item <%= page === 'data' ? 'active' : '' %>"><i class="ri-signal-wifi-line"></i> Data <span class="sb-badge badge-amber">Discounted</span></a>
+    <a href="/reseller/cable" class="sb-item"><i class="ri-tv-2-line"></i> Cable TV</a>
+    <a href="/reseller/electricity" class="sb-item"><i class="ri-flashlight-line"></i> Electricity</a>
+    <span class="sb-section-label">Business</span>
+    <a href="/reseller/transactions" class="sb-item <%= page === 'transactions' ? 'active' : '' %>"><i class="ri-list-check"></i> Transactions</a>
+    <a href="/reseller/api-keys" class="sb-item <%= page === 'api' ? 'active' : '' %>"><i class="ri-code-s-slash-line"></i> API Keys</a>
+    <a href="/reseller/earnings" class="sb-item"><i class="ri-bar-chart-line"></i> Earnings</a>
+    <a href="/reseller/price-list" class="sb-item"><i class="ri-price-tag-3-line"></i> My Price List</a>
+    <a href="/reseller/settings" class="sb-item"><i class="ri-settings-4-line"></i> Settings</a>
+
+    <% } else if (user && user.role === 'admin') { %>
+    <span class="sb-section-label">Overview</span>
+    <a href="/admin/dashboard" class="sb-item <%= page === 'dashboard' ? 'active' : '' %>"><i class="ri-dashboard-line"></i> Dashboard</a>
+    <a href="/admin/analytics" class="sb-item"><i class="ri-line-chart-line"></i> Analytics</a>
+    <span class="sb-section-label">Operations</span>
+    <a href="/admin/transactions" class="sb-item <%= page === 'transactions' ? 'active' : '' %>"><i class="ri-exchange-funds-line"></i> Transactions <span class="sb-badge badge-amber">12</span></a>
+    <a href="/admin/pending" class="sb-item"><i class="ri-time-line"></i> Pending <span class="sb-badge badge-red">5</span></a>
+    <a href="/admin/refunds" class="sb-item"><i class="ri-refund-2-line"></i> Refunds</a>
+    <span class="sb-section-label">Users</span>
+    <a href="/admin/users" class="sb-item <%= page === 'users' ? 'active' : '' %>"><i class="ri-group-line"></i> All Users</a>
+    <a href="/admin/resellers" class="sb-item"><i class="ri-store-2-line"></i> Resellers</a>
+    <a href="/admin/flagged" class="sb-item"><i class="ri-flag-line"></i> Flagged</a>
+    <span class="sb-section-label">Config</span>
+    <a href="/admin/pricing" class="sb-item"><i class="ri-price-tag-3-line"></i> Pricing</a>
+    <a href="/admin/promos" class="sb-item"><i class="ri-gift-line"></i> Promos & Banners</a>
+    <a href="/admin/subscriptions" class="sb-item"><i class="ri-vip-crown-line"></i> Subscriptions</a>
+    <a href="/admin/emails" class="sb-item"><i class="ri-mail-settings-line"></i> Email Templates</a>
+    <span class="sb-section-label">System</span>
+    <a href="/admin/security-logs" class="sb-item"><i class="ri-shield-check-line"></i> Security Logs</a>
+    <a href="/admin/api-status" class="sb-item"><i class="ri-server-line"></i> API Status</a>
+    <a href="/admin/settings" class="sb-item"><i class="ri-settings-4-line"></i> Settings</a>
+    <% } %>
+  </nav>
+
+  <div class="sb-bottom">
+    <form action="/auth/logout" method="POST">
+      <button type="submit" class="sb-logout">
+        <i class="ri-logout-box-line"></i> Log Out
+      </button>
+    </form>
+  </div>
+</aside>
+
+<!-- ── MAIN WRAP ── -->
+<div class="main-wrap">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="hamburger" id="hamburgerBtn"><i class="ri-menu-line"></i></button>
+    <div class="topbar-title"><%- title %></div>
+    <div class="tb-search"><i class="ri-search-line"></i> Search...</div>
+    <% if (user) { %>
+    <a href="/<%= user.role %>/notifications" class="tb-icon" title="Notifications">
+      <i class="ri-notification-3-line"></i>
+      <% if (locals.unreadNotifications > 0) { %>
+      <span class="tb-notif-count"><%= unreadNotifications > 9 ? '9+' : unreadNotifications %></span>
+      <% } %>
+    </a>
+    <% } %>
+    <div class="tb-icon" title="Support" onclick="window.open('https://wa.me/234XXXXXXXXXX','_blank')">
+      <i class="ri-customer-service-2-line"></i>
+    </div>
+  </header>
+
+  <!-- SEASONAL BANNERS -->
+  <% if (typeof promos !== 'undefined' && promos && promos.length > 0) { %>
+  <% promos.forEach((promo, idx) => { %>
+  <div class="seasonal-banner <%= promo.type %>" id="banner-<%= idx %>">
+    <div class="sb-banner-icon">
+      <i class="<%= promo.icon || 'ri-gift-line' %>"></i>
+    </div>
+    <div class="sb-banner-content">
+      <div class="sb-banner-title"><%= promo.title %></div>
+      <div class="sb-banner-text"><%= promo.message %></div>
+    </div>
+    <% if (promo.ctaText) { %>
+    <button class="sb-banner-cta" style="background:var(--primary);color:#fff" onclick="window.location.href='<%= promo.ctaLink || '#' %>'"><%= promo.ctaText %></button>
+    <% } %>
+    <button class="sb-banner-close" onclick="document.getElementById('banner-<%= idx %>').remove()"><i class="ri-close-line"></i></button>
+  </div>
+  <% }) %>
+  <% } %>
+
+  <!-- PAGE CONTENT -->
+  <%- body %>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <% if (user) { %>
+  <nav class="bottom-nav">
+    <div class="bn-item <%= page === 'dashboard' ? 'active' : '' %>" onclick="location.href='/<%= user.role %>/dashboard'">
+      <i class="ri-dashboard-line"></i> Home
+    </div>
+    <div class="bn-item <%= page === 'transactions' ? 'active' : '' %>" onclick="location.href='/<%= user.role %>/transactions'">
+      <i class="ri-list-check"></i> History
+    </div>
+    <div class="bn-fab" onclick="openQuickBuyModal()">
+      <i class="ri-add-line"></i>
+    </div>
+    <div class="bn-item <%= page === 'wallet' ? 'active' : '' %>" onclick="location.href='/<%= user.role %>/wallet'">
+      <i class="ri-wallet-3-line"></i> Wallet
+    </div>
+    <div class="bn-item <%= page === 'settings' ? 'active' : '' %>" onclick="location.href='/<%= user.role %>/settings'">
+      <i class="ri-settings-4-line"></i> Settings
+    </div>
+  </nav>
+  <% } %>
+</div>
+
+<!-- ── PWA INSTALL BANNER ── -->
+<div class="pwa-banner" id="pwaBanner">
+  <button class="pwa-close" id="pwaDismiss"><i class="ri-close-line"></i></button>
+  <div class="pwa-icon"><i class="ri-flashlight-fill" style="color:#fff;font-size:26px"></i></div>
+  <div class="pwa-text">
+    <div class="pwa-title">Install NairaFlow App</div>
+    <div class="pwa-sub">Get instant access — works offline, no app store needed</div>
+    <div class="pwa-actions">
+      <button class="pwa-install-btn" id="pwaInstallBtn">Install App</button>
+      <button class="pwa-dismiss-btn" id="pwaDismissBtn">Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST CONTAINER ── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ── GLOBAL JS ── -->
+<script>
+// ── SIDEBAR TOGGLE ────────────────────────────────────────
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebarOverlay');
+const hamburger = document.getElementById('hamburgerBtn');
+
+hamburger?.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+});
+overlay?.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+});
+
+// ── TOAST SYSTEM ─────────────────────────────────────────
+function showToast(message, type = 'info', duration = 4000) {
+  const container = document.getElementById('toastContainer');
+  const icons = { success: 'ri-checkbox-circle-line', error: 'ri-close-circle-line', info: 'ri-information-line' };
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <i class="${icons[type] || icons.info}" style="font-size:20px;color:var(--${type === 'success' ? 'green' : type === 'error' ? 'red' : 'blue'})"></i>
+    <span class="toast-msg">${message}</span>
+    <button class="toast-close" onclick="this.closest('.toast').remove()"><i class="ri-close-line"></i></button>
+  `;
+  container.appendChild(toast);
+  setTimeout(() => toast.style.cssText = 'opacity:0;transform:translateX(20px);transition:all .3s', duration);
+  setTimeout(() => toast.remove(), duration + 300);
+}
+
+// Flash messages
+<% if (locals.success && success.length > 0) { %>
+  showToast('<%= success[0] %>', 'success');
+<% } %>
+<% if (locals.error && error.length > 0) { %>
+  showToast('<%= error[0] %>', 'error');
+<% } %>
+
+// ── PWA INSTALL ──────────────────────────────────────────
+let deferredPrompt;
+const pwaBanner = document.getElementById('pwaBanner');
+const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+const pwaDismissBtn = document.getElementById('pwaDismissBtn');
+const pwaDismiss = document.getElementById('pwaDismiss');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!localStorage.getItem('pwaDismissed')) {
+    setTimeout(() => pwaBanner.classList.add('show'), 3000);
+  }
+});
+
+pwaInstallBtn?.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') showToast('NairaFlow installed successfully!', 'success');
+  deferredPrompt = null;
+  pwaBanner.classList.remove('show');
+});
+
+const dismissPwa = () => {
+  pwaBanner.classList.remove('show');
+  localStorage.setItem('pwaDismissed', '1');
+};
+pwaDismissBtn?.addEventListener('click', dismissPwa);
+pwaDismiss?.addEventListener('click', dismissPwa);
+
+// ── SERVICE WORKER ───────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
+// ── MODAL HELPERS ────────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id)?.classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id)?.classList.remove('open');
+}
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+// ── PIN INPUT NAVIGATION ─────────────────────────────────
+document.querySelectorAll('.pin-input').forEach((input, i, all) => {
+  input.addEventListener('input', () => {
+    if (input.value.length === 1 && i < all.length - 1) all[i + 1].focus();
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && !input.value && i > 0) all[i - 1].focus();
+  });
+});
+
+// ── QUICK BUY MODAL ──────────────────────────────────────
+function openQuickBuyModal() { openModal('quickBuyModal'); }
+
+// ── COUNTER ANIMATION ────────────────────────────────────
+function animateCounter(el, target, prefix = '₦', suffix = '') {
+  let current = 0;
+  const step = target / 60;
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = prefix + Math.floor(current).toLocaleString() + suffix;
+    if (current >= target) clearInterval(timer);
+  }, 14);
+}
+document.querySelectorAll('[data-count]').forEach(el => {
+  const target = parseFloat(el.dataset.count);
+  const prefix = el.dataset.prefix || '';
+  const suffix = el.dataset.suffix || '';
+  animateCounter(el, target, prefix, suffix);
+});
+</script>
+
+<%- typeof extraScript !== 'undefined' ? extraScript : '' %>
+</body>
+</html>

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reseller Dashboard — NairaFlow</title>
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<style>
+:root{--bg:#090f18;--surface:#0e1825;--card:#131f30;--card2:#192840;--border:#1e3050;--border2:#263d60;--text:#ddeeff;--text2:#6a8fba;--text3:#2d4a68;--primary:#f5a623;--primary2:#fbbf24;--primary-dim:rgba(245,166,35,.1);--primary-glow:rgba(245,166,35,.2);--green:#22d3a5;--green-dim:rgba(34,211,165,.09);--red:#f05f6e;--red-dim:rgba(240,95,110,.09);--blue:#38b2f8;--blue-dim:rgba(56,178,248,.09);--purple:#9b5de5;--purple-dim:rgba(155,93,229,.09)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+.sidebar{width:240px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto;z-index:200;transition:transform .3s}
+.sidebar::-webkit-scrollbar{width:0}
+.sb-head{padding:20px 16px;border-bottom:1px solid var(--border)}
+.sb-brand{display:flex;align-items:center;gap:9px}
+.sb-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--primary),#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-mark i{color:#fff;font-size:17px}
+.sb-name{font-size:17px;font-weight:800;letter-spacing:-.5px}
+.sb-name span{color:var(--primary2)}
+.sb-user{margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 12px;display:flex;align-items:center;gap:9px}
+.sb-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#d97706);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.sb-username{font-size:13px;font-weight:600}
+.sb-tier{font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;display:inline-block;margin-top:2px;background:var(--primary-dim);color:var(--primary2)}
+.sb-nav{padding:12px 10px;flex:1}
+.sb-lbl{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);padding:0 6px;margin:12px 0 4px;display:block}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 8px;border-radius:9px;font-size:13px;color:var(--text2);cursor:pointer;transition:all .18s;margin-bottom:1px;text-decoration:none;position:relative}
+.sb-item:hover{background:var(--card2);color:var(--text)}
+.sb-item.active{background:var(--primary-dim);color:var(--primary2)}
+.sb-item.active::after{content:'';position:absolute;right:-10px;top:50%;transform:translateY(-50%);width:3px;height:16px;background:var(--primary2);border-radius:4px 0 0 4px}
+.sb-item i{font-size:15px;width:16px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;background:var(--primary-dim);color:var(--primary2)}
+.sb-bottom{padding:12px;border-top:1px solid var(--border)}
+.sb-logout{display:flex;align-items:center;gap:9px;width:100%;padding:9px;border-radius:9px;background:none;border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .18s}
+.sb-logout:hover{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:150}
+.main-wrap{margin-left:240px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(9,15,24,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;gap:12px}
+.hamburger{display:none;background:none;border:none;color:var(--text2);font-size:22px;cursor:pointer}
+.tb-title{font-size:16px;font-weight:700;flex:1}
+.tb-icon{width:36px;height:36px;border-radius:9px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:var(--text2);transition:all .2s}
+.tb-icon:hover{border-color:var(--primary);color:var(--primary2)}
+.fund-btn{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:9px;background:var(--primary);color:#000;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
+.fund-btn:hover{background:var(--primary2);transform:translateY(-1px);box-shadow:0 4px 16px var(--primary-glow)}
+.page{padding:20px 24px}
+/* SEASONAL */
+.seasonal{border-radius:14px;padding:13px 18px;display:flex;align-items:center;gap:13px;margin-bottom:18px;position:relative;overflow:hidden;cursor:pointer}
+.seasonal.christmas{background:linear-gradient(135deg,#0d3b22,#0a4a1c);border:1px solid #1a6b35}
+.seasonal.promo{background:linear-gradient(135deg,#2d1a00,#3d2200);border:1px solid #8a5500}
+.seasonal.info{background:linear-gradient(135deg,#0a1f40,#0d2a55);border:1px solid #1e4080}
+.seasonal.newyear{background:linear-gradient(135deg,#1a1040,#0d0d2b);border:1px solid #3d2d80}
+.sl-icon{width:42px;height:42px;border-radius:11px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.sl-title{font-size:14px;font-weight:700}
+.sl-sub{font-size:12px;opacity:.8;margin-top:2px}
+.sl-cta{background:var(--primary);color:#000;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;flex-shrink:0}
+.sl-close{background:none;border:none;color:rgba(255,255,255,.4);font-size:18px;cursor:pointer;margin-left:4px}
+/* WALLET */
+.wallet-row{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:14px;margin-bottom:20px}
+.wc{background:linear-gradient(135deg,#1a1200 0%,#2a1c00 40%,#0e0b00 100%);border:1px solid #4a3000;border-radius:20px;padding:24px;position:relative;overflow:hidden}
+.wc::before{content:'';position:absolute;top:-50px;right:-30px;width:200px;height:200px;background:radial-gradient(circle,rgba(245,166,35,.18),transparent 70%);pointer-events:none}
+.wc-lbl{font-size:10px;color:#b8860b;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px}
+.wc-bal{font-size:36px;font-weight:800;letter-spacing:-1.5px;background:linear-gradient(90deg,#fff,#fcd34d);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.wc-meta{display:flex;gap:18px;padding-top:12px;border-top:1px solid rgba(245,166,35,.15);margin-top:12px}
+.wc-s-lbl{font-size:10px;color:#8a6600;margin-bottom:3px}
+.wc-s-val{font-size:14px;font-weight:700}
+.wc-btns{display:flex;gap:8px;margin-top:14px}
+.wc-btn{flex:1;padding:10px;border-radius:11px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.wc-p{background:var(--primary);color:#000}
+.wc-p:hover{background:var(--primary2)}
+.wc-g{background:rgba(245,166,35,.12);color:var(--primary2);border:1px solid rgba(245,166,35,.2)}
+.wc-g:hover{background:rgba(245,166,35,.2)}
+/* VA */
+.va{background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:12px 14px;margin-top:12px;display:flex;align-items:center;gap:10px}
+.va-ic{width:36px;height:36px;border-radius:9px;background:var(--green-dim);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--green);flex-shrink:0}
+.va-lbl{font-size:10px;color:var(--text3)}
+.va-num{font-size:15px;font-weight:800;letter-spacing:1px;color:var(--green)}
+.va-copy{margin-left:auto;background:var(--green-dim);border:none;color:var(--green);width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s}
+.va-copy:hover{background:rgba(34,211,165,.2)}
+/* STAT CARDS */
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
+.sc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.sc-ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.sc-val{font-size:24px;font-weight:800;letter-spacing:-1px}
+.sc-lbl{font-size:11px;color:var(--text2);margin-top:4px}
+.trend{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px}
+.t-up{background:var(--green-dim);color:var(--green)}.t-dn{background:var(--red-dim);color:var(--red)}
+.sc-bar{height:3px;background:var(--border);border-radius:2px;margin-top:12px;overflow:hidden}
+.sc-fill{height:100%;border-radius:2px}
+/* SERVICES GRID */
+.services-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:22px}
+.svc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 10px 12px;text-align:center;cursor:pointer;transition:all .2s;text-decoration:none;display:block;position:relative;overflow:hidden}
+.svc:hover{transform:translateY(-3px);border-color:var(--primary);box-shadow:0 8px 24px var(--primary-glow)}
+.svc-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 9px}
+.svc-name{font-size:12px;font-weight:600;color:var(--text)}
+.svc-sub{font-size:10px;color:var(--text2);margin-top:2px}
+.svc-disc{position:absolute;top:6px;right:6px;background:var(--primary);color:#000;font-size:8px;font-weight:800;padding:2px 5px;border-radius:4px}
+/* BOTTOM */
+.bottom-grid{display:grid;grid-template-columns:1fr 300px;gap:18px}
+/* TX */
+.tx-panel{background:var(--card);border:1px solid var(--border);border-radius:16px}
+.tx-head{padding:15px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.tx-head h3{font-size:14px;font-weight:700}
+.tx-row{display:flex;align-items:center;gap:11px;padding:12px 18px;cursor:pointer;transition:background .15s;text-decoration:none;color:var(--text)}
+.tx-row:hover{background:rgba(255,255,255,.02)}
+.tx-row+.tx-row{border-top:1px solid rgba(255,255,255,.03)}
+.tx-ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.tx-name{font-size:13px;font-weight:600}
+.tx-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.tx-amt{font-size:14px;font-weight:700}
+.tx-amt.dr{color:var(--red)}.tx-amt.cr{color:var(--green)}
+.tx-st{font-size:10px;font-weight:600;margin-top:2px}
+.st-ok{color:var(--green)}.st-fail{color:var(--red)}.st-pend{color:var(--primary)}
+/* RIGHT */
+.right-stack{display:flex;flex-direction:column;gap:14px}
+/* TIER CARD */
+.tier-card{background:linear-gradient(135deg,#1a1200,#2a1c00);border:1px solid #4a3000;border-radius:16px;padding:18px;position:relative;overflow:hidden}
+.tier-card::after{content:'★';position:absolute;right:-8px;top:-10px;font-size:100px;color:rgba(245,166,35,.05);line-height:1;pointer-events:none}
+.tier-lbl{font-size:10px;color:#b8860b;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.tier-name{font-size:22px;font-weight:800;color:var(--primary);letter-spacing:-1px}
+.tier-disc{font-size:28px;font-weight:800;color:var(--primary2);letter-spacing:-2px;margin-top:4px}
+.tier-disc span{font-size:14px;font-weight:500;color:#8a7040}
+.tier-prog{margin-top:12px}
+.tp-row{display:flex;justify-content:space-between;font-size:11px;color:#8a7040;margin-bottom:5px}
+.tp-bar{height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.tp-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:3px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.tier-desc{font-size:11px;color:#8a7040;margin-top:8px}
+.tier-upgrade{width:100%;margin-top:12px;padding:9px;border-radius:9px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.2);color:var(--primary2);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px}
+/* API CARD */
+.api-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
+.api-card h4{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.api-key-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-family:monospace;font-size:11px;color:var(--text2);word-break:break-all;margin-bottom:10px;position:relative}
+.api-copy-btn{width:100%;padding:9px;border-radius:9px;background:var(--blue-dim);border:1px solid rgba(56,178,248,.2);color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
+.api-copy-btn:hover{background:rgba(56,178,248,.15)}
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+.mo.open{opacity:1;pointer-events:all}
+.mo-box{background:var(--card);border:1px solid var(--border);border-radius:18px;width:100%;max-width:440px;transform:translateY(20px);transition:transform .25s;max-height:90vh;overflow-y:auto}
+.mo.open .mo-box{transform:translateY(0)}
+.mo-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mo-head h3{font-size:15px;font-weight:700}
+.mo-close{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer}
+.mo-body{padding:20px}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:10px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase}
+.fc{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13px;color:var(--text);font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s}
+.fc:focus{border-color:var(--primary)}
+.net-pills{display:flex;gap:8px;flex-wrap:wrap}
+.np{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .2s}
+.np.mtn{background:var(--primary-dim);color:var(--primary);border-color:rgba(245,166,35,.2)}
+.np.mtn.active{background:var(--primary);color:#000}
+.np.air{background:var(--red-dim);color:#f87171;border-color:rgba(248,113,113,.2)}
+.np.air.active{background:#f87171;color:#fff}
+.np.glo{background:var(--green-dim);color:var(--green);border-color:rgba(34,211,165,.2)}
+.np.glo.active{background:var(--green);color:#000}
+.np.nin{background:var(--blue-dim);color:var(--blue);border-color:rgba(56,178,248,.2)}
+.np.nin.active{background:var(--blue);color:#fff}
+.amt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:7px}
+.ap{padding:8px;border-radius:9px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;background:var(--surface);border:1.5px solid var(--border);color:var(--text2);transition:all .2s}
+.ap:hover,.ap.active{background:var(--primary-dim);border-color:var(--primary);color:var(--primary2)}
+.pin-row{display:flex;gap:9px;justify-content:center;margin:14px 0}
+.pin-i{width:50px;height:54px;text-align:center;background:var(--surface);border:2px solid var(--border);border-radius:11px;font-size:22px;color:var(--text);font-family:'Outfit',sans-serif;font-weight:700;outline:none;transition:border-color .2s}
+.pin-i:focus{border-color:var(--primary)}
+.bal-row{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 13px;margin-bottom:14px;font-size:13px}
+.bal-val{font-weight:700;color:var(--green)}
+.submit{width:100%;padding:13px;border-radius:11px;background:var(--primary);color:#000;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.submit:hover{background:var(--primary2)}
+.submit:disabled{opacity:.5;cursor:not-allowed}
+/* TOAST */
+.tc{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;display:flex;align-items:center;gap:10px;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,.4);animation:tin .3s ease;border-left:4px solid}
+.toast.success{border-left-color:var(--green)}.toast.error{border-left-color:var(--red)}.toast.info{border-left-color:var(--blue)}
+.toast-msg{font-size:13px;flex:1}
+.toast-x{background:none;border:none;color:var(--text3);cursor:pointer}
+/* PWA */
+.pwa{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;width:calc(100% - 32px);max-width:400px;box-shadow:0 10px 36px rgba(0,0,0,.5);z-index:500;display:none;gap:12px;align-items:center;animation:slideUp .4s ease}
+.pwa.show{display:flex}
+.pwa-ic{width:48px;height:48px;border-radius:13px;background:linear-gradient(135deg,var(--primary),#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pwa-ic i{color:#fff;font-size:22px}
+.pwa-install{background:var(--primary);color:#000;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif}
+.pwa-later{background:none;border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;font-family:'Outfit',sans-serif}
+.pwa-x{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer}
+/* BOTTOM NAV */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:300;justify-content:space-around}
+.bn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--text3);font-size:10px;font-weight:500;padding:3px 12px;border-radius:9px;transition:color .2s}
+.bn.active{color:var(--primary2)}
+.bn i{font-size:21px}
+.bn-fab{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#d97706);display:flex;align-items:center;justify-content:center;color:#000;margin-top:-16px;box-shadow:0 4px 16px var(--primary-glow);cursor:pointer;border:3px solid var(--bg)}
+.bn-fab i{font-size:22px}
+@keyframes tin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:fadeUp .5s ease both}
+.a1{animation-delay:.07s}.a2{animation-delay:.14s}
+@media(max-width:1000px){.services-grid{grid-template-columns:repeat(3,1fr)}.wallet-row{grid-template-columns:1fr}.bottom-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.sidebar-overlay.open{display:block}.main-wrap{margin-left:0}.topbar{padding:0 16px}.hamburger{display:block}.page{padding:16px;padding-bottom:86px}.bottom-nav{display:flex}.services-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <div class="sb-brand">
+      <div class="sb-mark"><i class="ri-store-2-line"></i></div>
+      <div class="sb-name">Naira<span>Flow</span></div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-av"><%= user.fullName.split(' ').map(n=>n[0]).join('').toUpperCase().substr(0,2) %></div>
+      <div>
+        <div class="sb-username"><%= user.fullName.split(' ')[0] %></div>
+        <span class="sb-tier"><%= (user.resellerTier||'bronze').toUpperCase() %> RESELLER</span>
+      </div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <span class="sb-lbl">Overview</span>
+    <a href="/reseller/dashboard" class="sb-item active"><i class="ri-dashboard-line"></i> Dashboard</a>
+    <a href="/reseller/wallet" class="sb-item"><i class="ri-wallet-3-line"></i> Wallet</a>
+    <span class="sb-lbl">Buy Services</span>
+    <a href="#" class="sb-item" onclick="openMo('airtimeMo');return false"><i class="ri-phone-line"></i> Airtime</a>
+    <a href="#" class="sb-item" onclick="openMo('dataMo');return false"><i class="ri-signal-wifi-line"></i> Data <span class="sb-badge">Discounted</span></a>
+    <a href="/reseller/cable" class="sb-item"><i class="ri-tv-2-line"></i> Cable TV</a>
+    <a href="/reseller/electricity" class="sb-item"><i class="ri-flashlight-line"></i> Electricity</a>
+    <span class="sb-lbl">Business</span>
+    <a href="/reseller/transactions" class="sb-item"><i class="ri-list-check"></i> Transactions</a>
+    <a href="/reseller/earnings" class="sb-item"><i class="ri-bar-chart-line"></i> Earnings</a>
+    <a href="/reseller/api-keys" class="sb-item"><i class="ri-code-s-slash-line"></i> API Keys</a>
+    <a href="/reseller/price-list" class="sb-item"><i class="ri-price-tag-3-line"></i> My Price List</a>
+    <a href="/reseller/settings" class="sb-item"><i class="ri-settings-4-line"></i> Settings</a>
+  </nav>
+  <div class="sb-bottom">
+    <form action="/auth/logout" method="POST">
+      <button type="submit" class="sb-logout"><i class="ri-logout-box-line"></i> Log Out</button>
+    </form>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+  <header class="topbar">
+    <button class="hamburger" id="ham"><i class="ri-menu-line"></i></button>
+    <div class="tb-title">Reseller Dashboard</div>
+    <div class="tb-icon" title="Notifications"><i class="ri-notification-3-line"></i></div>
+    <div class="tb-icon" title="Price List" onclick="location.href='/reseller/price-list'"><i class="ri-price-tag-3-line"></i></div>
+    <button class="fund-btn" onclick="openMo('fundMo')"><i class="ri-add-circle-line"></i> Fund Wallet</button>
+  </header>
+
+  <div class="page">
+
+    <!-- DYNAMIC SEASONAL BANNERS -->
+    <% if(typeof promos !== 'undefined' && promos.length > 0) { %>
+    <% promos.forEach((promo, idx) => { %>
+    <div class="seasonal <%= promo.type %>" id="banner-<%= idx %>">
+      <div class="sl-icon"><i class="<%= promo.icon || 'ri-gift-2-line' %>"></i></div>
+      <div style="flex:1">
+        <div class="sl-title"><%= promo.title %></div>
+        <div class="sl-sub"><%= promo.message %></div>
+      </div>
+      <% if(promo.ctaText) { %><button class="sl-cta" onclick="location.href='<%= promo.ctaLink||'#' %>'"><%= promo.ctaText %></button><% } %>
+      <button class="sl-close" onclick="document.getElementById('banner-<%= idx %>').remove()"><i class="ri-close-line"></i></button>
+    </div>
+    <% }) %>
+    <% } %>
+
+    <!-- WALLET + STATS -->
+    <div class="wallet-row anim">
+      <div class="wc">
+        <div class="wc-lbl">Reseller Wallet</div>
+        <div class="wc-bal" id="wBal">₦<%= user.walletBalance.toLocaleString() %></div>
+        <div class="wc-meta">
+          <div><div class="wc-s-lbl">Today</div><div class="wc-s-val">₦<%= typeof dailyTotal !== 'undefined' ? Math.floor(dailyTotal).toLocaleString() : '0' %></div></div>
+          <div><div class="wc-s-lbl">This Month</div><div class="wc-s-val">₦<%= typeof monthlyTotal !== 'undefined' ? Math.floor(monthlyTotal).toLocaleString() : '0' %></div></div>
+          <div><div class="wc-s-lbl">Tx Count</div><div class="wc-s-val"><%= typeof monthlyCount !== 'undefined' ? monthlyCount : '0' %></div></div>
+        </div>
+        <div class="wc-btns">
+          <button class="wc-btn wc-p" onclick="openMo('fundMo')"><i class="ri-add-circle-line"></i> Fund</button>
+          <button class="wc-btn wc-g" onclick="location.href='/reseller/transactions'"><i class="ri-file-list-3-line"></i> Statement</button>
+          <button class="wc-btn wc-g" onclick="location.href='/reseller/api-keys'"><i class="ri-code-s-slash-line"></i> API Keys</button>
+        </div>
+        <% if(user.virtualAccount?.accountNumber) { %>
+        <div class="va">
+          <div class="va-ic"><i class="ri-bank-line"></i></div>
+          <div>
+            <div class="va-lbl">Fund via — <%= user.virtualAccount.bankName %></div>
+            <div class="va-num"><%= user.virtualAccount.accountNumber %></div>
+          </div>
+          <button class="va-copy" onclick="copyText('<%= user.virtualAccount.accountNumber %>')" title="Copy"><i class="ri-file-copy-line"></i></button>
+        </div>
+        <% } %>
+      </div>
+      <div class="stat-card">
+        <div class="sc-top">
+          <div class="sc-ic" style="background:var(--blue-dim);color:var(--blue)"><i class="ri-signal-wifi-line"></i></div>
+          <span class="trend t-up"><i class="ri-arrow-up-line"></i> 12%</span>
+        </div>
+        <div class="sc-val" style="color:var(--blue)">₦<%= typeof monthlyTotal !== 'undefined' ? Math.floor(monthlyTotal*0.65).toLocaleString() : '0' %></div>
+        <div class="sc-lbl">Data Volume — Month</div>
+        <div class="sc-bar"><div class="sc-fill" style="width:65%;background:var(--blue)"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-top">
+          <div class="sc-ic" style="background:var(--green-dim);color:var(--green)"><i class="ri-money-dollar-circle-line"></i></div>
+          <span class="trend t-up"><i class="ri-arrow-up-line"></i> Live</span>
+        </div>
+        <div class="sc-val" style="color:var(--green)"><%= typeof dailyCount !== 'undefined' ? dailyCount : '0' %></div>
+        <div class="sc-lbl">Transactions — Today</div>
+        <div class="sc-bar"><div class="sc-fill" style="width:45%;background:var(--green)"></div></div>
+      </div>
+    </div>
+
+    <!-- SERVICES GRID -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <h2 style="font-size:15px;font-weight:700">Quick Purchase</h2>
+      <a href="/reseller/price-list" style="font-size:12px;color:var(--primary2);text-decoration:none;display:flex;align-items:center;gap:4px">View price list <i class="ri-arrow-right-line"></i></a>
+    </div>
+    <div class="services-grid anim a1">
+      <a href="#" class="svc" onclick="openMo('airtimeMo');return false">
+        <div class="svc-ic" style="background:var(--blue-dim);color:var(--blue)"><i class="ri-phone-line"></i></div>
+        <div class="svc-name">Airtime</div><div class="svc-sub">All Networks</div>
+      </a>
+      <a href="#" class="svc" onclick="openMo('dataMo');return false">
+        <div class="svc-ic" style="background:var(--primary-dim);color:var(--primary2)"><i class="ri-signal-wifi-line"></i></div>
+        <div class="svc-name">Data</div><div class="svc-sub">SME & Gifting</div>
+        <span class="svc-disc">HOT</span>
+      </a>
+      <a href="/reseller/cable" class="svc">
+        <div class="svc-ic" style="background:var(--purple-dim);color:var(--purple)"><i class="ri-tv-2-line"></i></div>
+        <div class="svc-name">Cable TV</div><div class="svc-sub">DSTV · GOTV</div>
+      </a>
+      <a href="/reseller/electricity" class="svc">
+        <div class="svc-ic" style="background:var(--green-dim);color:var(--green)"><i class="ri-flashlight-line"></i></div>
+        <div class="svc-name">Electricity</div><div class="svc-sub">Prepaid Token</div>
+      </a>
+      <a href="/reseller/exam" class="svc">
+        <div class="svc-ic" style="background:var(--red-dim);color:var(--red)"><i class="ri-book-open-line"></i></div>
+        <div class="svc-name">Exam Pins</div><div class="svc-sub">WAEC · JAMB</div>
+      </a>
+    </div>
+
+    <!-- BOTTOM GRID -->
+    <div class="bottom-grid anim a2">
+      <!-- TRANSACTIONS -->
+      <div class="tx-panel">
+        <div class="tx-head">
+          <h3>Recent Transactions</h3>
+          <a href="/reseller/transactions" style="font-size:12px;color:var(--primary2);text-decoration:none">View all</a>
+        </div>
+        <% if(typeof recentTx !== 'undefined' && recentTx.length > 0) { %>
+        <% recentTx.forEach(tx => { %>
+        <a class="tx-row" href="/reseller/transactions">
+          <div class="tx-ic" style="background:var(--<%=tx.type==='data'?'blue':tx.type==='airtime'?'primary':tx.type==='wallet_fund'?'green':'purple'%>-dim);color:var(--<%=tx.type==='data'?'blue':tx.type==='airtime'?'primary2':tx.type==='wallet_fund'?'green':'purple'%>)">
+            <i class="ri-<%=tx.type==='data'?'signal-wifi-line':tx.type==='airtime'?'phone-line':tx.type==='wallet_fund'?'wallet-3-line':'exchange-funds-line'%>"></i>
+          </div>
+          <div style="flex:1">
+            <div class="tx-name"><%= tx.serviceDetails?.network||'' %> <%= tx.type.replace('_',' ') %> <%= tx.serviceDetails?.phone?'— '+tx.serviceDetails.phone:'' %></div>
+            <div class="tx-meta"><%= new Date(tx.createdAt).toLocaleString() %></div>
+          </div>
+          <div style="text-align:right">
+            <div class="tx-amt <%= tx.category==='credit'?'cr':'dr' %>"><%= tx.category==='credit'?'+':'-' %>₦<%= tx.amount.toLocaleString() %></div>
+            <div class="tx-st st-<%= tx.status==='success'?'ok':tx.status==='pending'||tx.status==='processing'?'pend':'fail' %>"><%= tx.status %></div>
+          </div>
+        </a>
+        <% }) %>
+        <% } else { %>
+        <div style="padding:30px;text-align:center;color:var(--text3)"><i class="ri-receipt-line" style="font-size:32px;display:block;margin-bottom:8px"></i>No transactions yet</div>
+        <% } %>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right-stack">
+        <!-- TIER CARD -->
+        <div class="tier-card">
+          <div class="tier-lbl">Your Reseller Tier</div>
+          <div class="tier-name"><%= (user.resellerTier||'bronze').charAt(0).toUpperCase()+(user.resellerTier||'bronze').slice(1) %> Reseller</div>
+          <div class="tier-disc"><%={ bronze:'5%', silver:'10%', gold:'15%', api:'18%' }[user.resellerTier||'bronze'] %> <span>off retail</span></div>
+          <div class="tier-prog">
+            <div class="tp-row"><span>Progress to <%={bronze:'Silver',silver:'Gold',gold:'Platinum',api:'Max'}[user.resellerTier||'bronze']%></span><span><%= Math.min(Math.floor((user.totalSpent||0)/100000*100),100) %>%</span></div>
+            <div class="tp-bar"><div class="tp-fill" style="width:<%= Math.min(Math.floor((user.totalSpent||0)/100000*100),100) %>%"></div></div>
+          </div>
+          <div class="tier-desc">Spend ₦<%= (100000-(user.totalSpent||0)).toLocaleString() %> more to upgrade tier</div>
+          <button class="tier-upgrade"><i class="ri-rocket-line"></i> Upgrade Tier</button>
+        </div>
+
+        <!-- API CARD -->
+        <div class="api-card">
+          <h4><i class="ri-code-s-slash-line" style="color:var(--blue)"></i> API Access</h4>
+          <% if(user.apiKey) { %>
+          <div class="api-key-box" id="apiKeyBox"><%= user.apiKey.substr(0,20)+'...' %></div>
+          <button class="api-copy-btn" onclick="copyText('<%= user.apiKey %>')"><i class="ri-file-copy-line"></i> Copy Full API Key</button>
+          <div style="font-size:11px;color:var(--text3);margin-top:8px;text-align:center">Used today: <%= user.apiCallsToday||0 %> / <%= user.apiCallsLimit||1000 %> calls</div>
+          <% } else { %>
+          <div style="text-align:center;color:var(--text3);font-size:12px;padding:8px 0;margin-bottom:10px"><i class="ri-lock-line" style="font-size:24px;display:block;margin-bottom:6px"></i>No API key generated yet</div>
+          <button class="api-copy-btn" onclick="generateApiKey()"><i class="ri-key-line"></i> Generate API Key</button>
+          <% } %>
+          <a href="/reseller/api-keys" style="display:block;text-align:center;font-size:11px;color:var(--primary2);text-decoration:none;margin-top:10px">View API documentation <i class="ri-arrow-right-line"></i></a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MOBILE NAV -->
+  <nav class="bottom-nav">
+    <div class="bn active" onclick="location.href='/reseller/dashboard'"><i class="ri-dashboard-line"></i> Home</div>
+    <div class="bn" onclick="location.href='/reseller/transactions'"><i class="ri-list-check"></i> History</div>
+    <div class="bn-fab" onclick="openMo('dataMo')"><i class="ri-add-line"></i></div>
+    <div class="bn" onclick="location.href='/reseller/wallet'"><i class="ri-wallet-3-line"></i> Wallet</div>
+    <div class="bn" onclick="location.href='/reseller/settings'"><i class="ri-settings-4-line"></i> More</div>
+  </nav>
+</div>
+
+<!-- ── MODALS ── -->
+
+<!-- FUND MODAL -->
+<div class="mo" id="fundMo">
+  <div class="mo-box">
+    <div class="mo-head"><h3><i class="ri-add-circle-line" style="color:var(--primary)"></i> Fund Wallet</h3><button class="mo-close" onclick="closeMo('fundMo')"><i class="ri-close-line"></i></button></div>
+    <div class="mo-body">
+      <% if(user.virtualAccount?.accountNumber) { %>
+      <div style="background:var(--green-dim);border:1px solid rgba(34,211,165,.2);border-radius:11px;padding:14px;margin-bottom:14px">
+        <div style="font-size:10px;color:var(--green);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px"><i class="ri-bank-line"></i> Instant Bank Transfer</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px;color:var(--text2)">Bank</span><span style="font-weight:700"><%= user.virtualAccount.bankName %></span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px;color:var(--text2)">Account</span><span style="font-size:18px;font-weight:800;color:var(--green)"><%= user.virtualAccount.accountNumber %></span></div>
+        <button onclick="copyText('<%= user.virtualAccount.accountNumber %>')" style="width:100%;margin-top:10px;padding:8px;border-radius:8px;background:rgba(34,211,165,.12);border:1px solid rgba(34,211,165,.2);color:var(--green);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px"><i class="ri-file-copy-line"></i> Copy Account Number</button>
+      </div>
+      <div style="text-align:center;color:var(--text3);font-size:12px;margin:12px 0">— or fund with card —</div>
+      <% } %>
+      <div class="fg"><label class="fl">Amount</label><input type="number" class="fc" id="fundAmt" placeholder="Min ₦1,000" min="1000"></div>
+      <div class="amt-grid" style="margin-bottom:14px">
+        <div class="ap" onclick="setAmt('fundAmt',2000)">₦2,000</div>
+        <div class="ap" onclick="setAmt('fundAmt',5000)">₦5,000</div>
+        <div class="ap" onclick="setAmt('fundAmt',10000)">₦10,000</div>
+        <div class="ap" onclick="setAmt('fundAmt',20000)">₦20,000</div>
+        <div class="ap" onclick="setAmt('fundAmt',50000)">₦50,000</div>
+        <div class="ap" onclick="setAmt('fundAmt',100000)">₦100,000</div>
+      </div>
+      <button class="submit" id="fundBtn" onclick="initFund()"><i class="ri-bank-card-line"></i> Pay with Card</button>
+    </div>
+  </div>
+</div>
+
+<!-- AIRTIME MODAL -->
+<div class="mo" id="airtimeMo">
+  <div class="mo-box">
+    <div class="mo-head"><h3><i class="ri-phone-line" style="color:var(--blue)"></i> Buy Airtime</h3><button class="mo-close" onclick="closeMo('airtimeMo')"><i class="ri-close-line"></i></button></div>
+    <div class="mo-body">
+      <div class="bal-row"><span style="color:var(--text2)"><i class="ri-wallet-3-line"></i> Balance</span><span class="bal-val">₦<%= user.walletBalance.toLocaleString() %></span></div>
+      <div class="fg"><label class="fl">Network</label>
+        <div class="net-pills" id="airNets">
+          <div class="np mtn active" data-net="MTN">MTN</div>
+          <div class="np air" data-net="Airtel">Airtel</div>
+          <div class="np glo" data-net="Glo">Glo</div>
+          <div class="np nin" data-net="9mobile">9mobile</div>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Phone Number</label><input type="tel" class="fc" id="airPhone" placeholder="08012345678" maxlength="11"></div>
+      <div class="fg"><label class="fl">Amount</label><input type="number" class="fc" id="airAmt" placeholder="Enter amount">
+        <div class="amt-grid" style="margin-top:7px">
+          <div class="ap" onclick="setAmt('airAmt',100)">₦100</div>
+          <div class="ap" onclick="setAmt('airAmt',200)">₦200</div>
+          <div class="ap" onclick="setAmt('airAmt',500)">₦500</div>
+          <div class="ap" onclick="setAmt('airAmt',1000)">₦1,000</div>
+          <div class="ap" onclick="setAmt('airAmt',2000)">₦2,000</div>
+          <div class="ap" onclick="setAmt('airAmt',5000)">₦5,000</div>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Transaction PIN</label>
+        <div class="pin-row"><input type="password" class="pin-i" maxlength="1" inputmode="numeric"><input type="password" class="pin-i" maxlength="1" inputmode="numeric"><input type="password" class="pin-i" maxlength="1" inputmode="numeric"><input type="password" class="pin-i" maxlength="1" inputmode="numeric"></div>
+      </div>
+      <button class="submit" id="airBtn" onclick="doAirtime()"><i class="ri-phone-line"></i> Buy Airtime</button>
+    </div>
+  </div>
+</div>
+
+<!-- DATA MODAL -->
+<div class="mo" id="dataMo">
+  <div class="mo-box">
+    <div class="mo-head"><h3><i class="ri-signal-wifi-line" style="color:var(--primary2)"></i> Buy Data Bundle</h3><button class="mo-close" onclick="closeMo('dataMo')"><i class="ri-close-line"></i></button></div>
+    <div class="mo-body">
+      <div class="bal-row"><span style="color:var(--text2)"><i class="ri-wallet-3-line"></i> Balance</span><span class="bal-val">₦<%= user.walletBalance.toLocaleString() %></span></div>
+      <div class="fg"><label class="fl">Network</label>
+        <div class="net-pills" id="dataNets">
+          <div class="np mtn active" data-net="mtn-data">MTN</div>
+          <div class="np air" data-net="airtel-data">Airtel</div>
+          <div class="np glo" data-net="glo-data">Glo</div>
+          <div class="np nin" data-net="etisalat-data">9mobile</div>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Phone</label><input type="tel" class="fc" id="dataPhone" placeholder="08012345678" maxlength="11"></div>
+      <div class="fg"><label class="fl">Plan</label>
+        <select class="fc" id="dataPlan" onchange="showPrice()">
+          <option value="">-- Select plan --</option>
+          <option value="mtn-10mb|mtn-10mb|10MB|50">MTN 10MB — ₦50</option>
+          <option value="mtn-100mb|mtn-100mb|100MB|150">MTN 100MB — ₦150</option>
+          <option value="mtn-1gb|mtn-1gb|1GB Monthly|850">MTN 1GB — ₦850</option>
+          <option value="mtn-2gb|mtn-2gb|2GB Monthly|1500">MTN 2GB — ₦1,500</option>
+          <option value="mtn-5gb|mtn-5gb|5GB Monthly|3200">MTN 5GB — ₦3,200</option>
+          <option value="mtn-10gb|mtn-10gb|10GB Monthly|5800">MTN 10GB — ₦5,800</option>
+        </select>
+      </div>
+      <div id="priceDisplay" style="display:none;background:var(--primary-dim);border-radius:9px;padding:10px 12px;margin-bottom:12px;display:none;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;color:var(--text2)">Reseller Price</span>
+        <span style="font-size:16px;font-weight:800;color:var(--primary2)" id="priceVal">—</span>
+      </div>
+      <div class="fg"><label class="fl">Transaction PIN</label>
+        <div class="pin-row" id="dataPinRow"><input type="password" class="pin-i" maxlength="1" inputmode="numeric"><input type="password" class="pin-i" maxlength="1" inputmode="numeric"><input type="password" class="pin-i" maxlength="1" inputmode="numeric"><input type="password" class="pin-i" maxlength="1" inputmode="numeric"></div>
+      </div>
+      <button class="submit" id="dataBtn" onclick="doData()"><i class="ri-signal-wifi-line"></i> Buy Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- PWA -->
+<div class="pwa" id="pwaBanner">
+  <button class="pwa-x" onclick="dismissPwa()"><i class="ri-close-line"></i></button>
+  <div class="pwa-ic"><i class="ri-flashlight-fill"></i></div>
+  <div style="flex:1">
+    <div style="font-size:14px;font-weight:700">Install NairaFlow App</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:2px">Instant access — works offline too</div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="pwa-install" id="pwaInstallBtn">Install App</button>
+      <button class="pwa-later" onclick="dismissPwa()">Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<div class="tc" id="tc"></div>
+
+<script>
+const ham=document.getElementById('ham'),sb=document.getElementById('sidebar'),ov=document.getElementById('sidebarOverlay');
+ham?.addEventListener('click',()=>{sb.classList.toggle('open');ov.classList.toggle('open')});
+ov?.addEventListener('click',()=>{sb.classList.remove('open');ov.classList.remove('open')});
+function openMo(id){document.getElementById(id).classList.add('open')}
+function closeMo(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')}));
+function toast(msg,type='info'){
+  const c=document.getElementById('tc');
+  const ic={success:'ri-checkbox-circle-line',error:'ri-close-circle-line',info:'ri-information-line'};
+  const t=document.createElement('div');t.className=`toast ${type}`;
+  t.innerHTML=`<i class="${ic[type]}" style="font-size:17px;color:var(--${type==='success'?'green':type==='error'?'red':'blue'})"></i><span class="toast-msg">${msg}</span><button class="toast-x" onclick="this.closest('.toast').remove()"><i class="ri-close-line"></i></button>`;
+  document.getElementById('tc').appendChild(t);
+  setTimeout(()=>t.remove(),4500);
+}
+function copyText(t){navigator.clipboard.writeText(t);toast('Copied!','success')}
+function setAmt(id,v){document.getElementById(id).value=v}
+document.querySelectorAll('.net-pills').forEach(c=>{c.querySelectorAll('.np').forEach(p=>{p.addEventListener('click',function(){c.querySelectorAll('.np').forEach(x=>x.classList.remove('active'));this.classList.add('active')})})});
+document.querySelectorAll('.pin-i').forEach((inp,i,all)=>{
+  inp.addEventListener('input',()=>{if(inp.value&&i<all.length-1)all[i+1].focus()});
+  inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&i>0)all[i-1].focus()});
+});
+function getPin(container){return[...container.querySelectorAll('.pin-i')].map(i=>i.value).join('')}
+function showPrice(){
+  const sel=document.getElementById('dataPlan');const d=document.getElementById('priceDisplay');const v=document.getElementById('priceVal');
+  if(sel.value){const p=sel.value.split('|');v.textContent='₦'+parseInt(p[3]).toLocaleString();d.style.display='flex'}else d.style.display='none';
+}
+async function initFund(){
+  const amt=parseFloat(document.getElementById('fundAmt').value);
+  if(!amt||amt<1000)return toast('Minimum fund is ₦1,000','error');
+  const btn=document.getElementById('fundBtn');btn.disabled=true;btn.innerHTML='<i class="ri-loader-4-line" style="animation:spin 1s linear infinite"></i> Processing...';
+  try{
+    const r=await fetch('/reseller/wallet/fund',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount:amt})});
+    const d=await r.json();
+    if(d.success&&d.checkoutUrl)window.location.href=d.checkoutUrl;
+    else toast(d.message||'Failed','error');
+  }catch(e){toast('Server error','error')}
+  btn.disabled=false;btn.innerHTML='<i class="ri-bank-card-line"></i> Pay with Card';
+}
+async function doAirtime(){
+  const network=document.querySelector('#airNets .np.active')?.dataset.net;
+  const phone=document.getElementById('airPhone').value.trim();
+  const amount=parseFloat(document.getElementById('airAmt').value);
+  const pin=getPin(document.querySelector('#airtimeMo .pin-row'));
+  if(!network||!phone||phone.length!==11||!amount||pin.length!==4)return toast('Fill all fields correctly','error');
+  const btn=document.getElementById('airBtn');btn.disabled=true;btn.innerHTML='<i class="ri-loader-4-line" style="animation:spin 1s linear infinite"></i> Processing...';
+  try{
+    const r=await fetch('/reseller/airtime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({network,phone,amount,pin})});
+    const d=await r.json();
+    if(d.success){toast(d.message,'success');closeMo('airtimeMo');setTimeout(()=>location.reload(),2000)}
+    else toast(d.message,'error');
+  }catch(e){toast('Server error','error')}
+  btn.disabled=false;btn.innerHTML='<i class="ri-phone-line"></i> Buy Airtime';
+}
+async function doData(){
+  const network=document.querySelector('#dataNets .np.active')?.dataset.net;
+  const phone=document.getElementById('dataPhone').value.trim();
+  const planSel=document.getElementById('dataPlan').value;
+  const pin=getPin(document.getElementById('dataPinRow'));
+  if(!phone||phone.length!==11||!planSel||pin.length!==4)return toast('Fill all fields correctly','error');
+  const parts=planSel.split('|');
+  const [serviceId,variationCode,planName,amount]=parts;
+  const btn=document.getElementById('dataBtn');btn.disabled=true;btn.innerHTML='<i class="ri-loader-4-line" style="animation:spin 1s linear infinite"></i> Processing...';
+  try{
+    const r=await fetch('/reseller/data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({serviceId,variationCode,phone,pin,planName,amount})});
+    const d=await r.json();
+    if(d.success){toast(d.message,'success');closeMo('dataMo');setTimeout(()=>location.reload(),2000)}
+    else toast(d.message,'error');
+  }catch(e){toast('Server error','error')}
+  btn.disabled=false;btn.innerHTML='<i class="ri-signal-wifi-line"></i> Buy Data';
+}
+async function generateApiKey(){
+  const r=await fetch('/reseller/api-keys/generate',{method:'POST'});
+  const d=await r.json();
+  if(d.success){toast('API key generated!','success');setTimeout(()=>location.reload(),1500)}
+  else toast(d.message,'error');
+}
+// PWA
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  if(!localStorage.getItem('pwaDismissed'))setTimeout(()=>document.getElementById('pwaBanner').classList.add('show'),4000);
+});
+document.getElementById('pwaInstallBtn')?.addEventListener('click',async()=>{
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;
+  if(outcome==='accepted')toast('App installed!','success');
+  deferredPrompt=null;document.getElementById('pwaBanner').classList.remove('show');
+});
+function dismissPwa(){document.getElementById('pwaBanner').classList.remove('show');localStorage.setItem('pwaDismissed','1')}
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+// Flash
+<% if(locals.success&&success.length>0){%>toast('<%=success[0]%>','success');<% } %>
+<% if(locals.error&&error.length>0){%>toast('<%=error[0]%>','error');<% } %>
+</script>
+<style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
+</body>
+</html>

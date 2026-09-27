@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: nairaflow-vtu
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: KORAPAY_SECRET_KEY
+        sync: false
+      - key: KORAPAY_PUBLIC_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: VTPASS_API_KEY
+        sync: false
+      - key: VTPASS_PUBLIC_KEY
+        sync: false
+      - key: VTPASS_SECRET_KEY
+        sync: false
+      - key: VTPASS_BASE_URL
+        value: https://vtpass.com/api
+      - key: REFERRAL_BONUS
+        value: "200"
+      - key: APP_URL
+        sync: false

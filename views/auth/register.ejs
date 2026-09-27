@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Create Account — NairaFlow</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#07101c;--card:#0f1e2e;--border:#1b3048;--primary:#5b6af0;--primary2:#818cf8;--green:#22d3a5;--red:#f05f6e;--text:#ddeeff;--text2:#6a92b8;--text3:#2d4a65}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Outfit',sans-serif;background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 20px;position:relative;overflow-x:hidden}
+    body::before{content:'';position:absolute;top:-200px;left:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(91,106,240,.1),transparent 70%);pointer-events:none}
+    .wrap{width:100%;max-width:480px;position:relative;z-index:1}
+    .logo-area{text-align:center;margin-bottom:28px}
+    .logo-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--primary),#7c3aed);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;box-shadow:0 8px 24px rgba(91,106,240,.3)}
+    .logo-icon i{color:#fff;font-size:24px}
+    .logo-name{font-size:24px;font-weight:800;letter-spacing:-.5px}
+    .logo-name span{color:var(--primary2)}
+    .logo-sub{font-size:12px;color:var(--text2);margin-top:3px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:30px}
+    .card-title{font-size:19px;font-weight:700;margin-bottom:4px}
+    .card-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
+    .error-list{background:rgba(240,95,110,.08);border:1px solid rgba(240,95,110,.2);border-radius:10px;padding:12px 16px;margin-bottom:16px}
+    .error-list li{font-size:12px;color:#f87a8a;display:flex;align-items:center;gap:6px;margin-bottom:3px}
+    .error-list li:last-child{margin-bottom:0}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .form-group{margin-bottom:16px}
+    .form-label{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase}
+    .input-wrap{position:relative}
+    .input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none}
+    .form-ctrl{width:100%;background:#0a1828;border:1.5px solid var(--border);border-radius:10px;padding:11px 13px 11px 38px;font-size:14px;color:var(--text);font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s}
+    .form-ctrl:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(91,106,240,.1)}
+    .form-ctrl::placeholder{color:var(--text3)}
+    .form-ctrl.error-field{border-color:var(--red)}
+    .pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px}
+    .ref-badge{display:flex;align-items:center;gap:8px;background:rgba(34,211,165,.08);border:1px solid rgba(34,211,165,.2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green)}
+    .ref-badge i{font-size:18px}
+    .pw-strength{height:3px;border-radius:2px;background:var(--border);margin-top:6px;overflow:hidden}
+    .pw-strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s;width:0}
+    .terms-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px}
+    .terms-row input[type="checkbox"]{width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;margin-top:2px}
+    .terms-row label{font-size:12px;color:var(--text2);line-height:1.5}
+    .terms-row a{color:var(--primary2);text-decoration:none}
+    .submit-btn{width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--primary),#7c3aed);color:#fff;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .submit-btn:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 24px rgba(91,106,240,.4)}
+    .submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .login-link{text-align:center;font-size:13px;color:var(--text2);margin-top:18px}
+    .login-link a{color:var(--primary2);text-decoration:none;font-weight:600}
+    .perks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:20px}
+    .perk{background:rgba(91,106,240,.06);border:1px solid rgba(91,106,240,.12);border-radius:10px;padding:10px;text-align:center}
+    .perk i{font-size:18px;color:var(--primary2);display:block;margin-bottom:4px}
+    .perk span{font-size:10px;color:var(--text2)}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+    .wrap{animation:fadeIn .5s ease}
+    @media(max-width:420px){.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo-area">
+    <div class="logo-icon"><i class="ri-flashlight-fill"></i></div>
+    <div class="logo-name">Naira<span>Flow</span></div>
+    <div class="logo-sub">Create your free account</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Get started free</div>
+    <div class="card-sub">Join thousands buying data & airtime at the best rates</div>
+
+    <% if (typeof ref !== 'undefined' && ref) { %>
+    <div class="ref-badge"><i class="ri-gift-2-line"></i> You were referred! You'll get a bonus on your first transaction.</div>
+    <% } %>
+
+    <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
+    <ul class="error-list">
+      <% errors.forEach(e => { %><li><i class="ri-close-circle-line"></i> <%= e.msg %></li><% }) %>
+    </ul>
+    <% } %>
+
+    <form method="POST" action="/auth/register" id="regForm">
+      <input type="hidden" name="ref" value="<%= typeof ref !== 'undefined' ? ref : '' %>">
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <div class="input-wrap">
+            <i class="ri-user-line input-icon"></i>
+            <input type="text" name="fullName" class="form-ctrl" placeholder="John Doe" value="<%= typeof data !== 'undefined' ? (data.fullName||'') : '' %>" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <div class="input-wrap">
+            <i class="ri-phone-line input-icon"></i>
+            <input type="tel" name="phone" class="form-ctrl" placeholder="08012345678" maxlength="11" value="<%= typeof data !== 'undefined' ? (data.phone||'') : '' %>" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <div class="input-wrap">
+          <i class="ri-mail-line input-icon"></i>
+          <input type="email" name="email" class="form-ctrl" placeholder="your@email.com" value="<%= typeof data !== 'undefined' ? (data.email||'') : '' %>" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-wrap">
+            <i class="ri-lock-line input-icon"></i>
+            <input type="password" name="password" class="form-ctrl" id="pw" placeholder="Min 8 characters" required oninput="checkStrength(this.value)">
+            <button type="button" class="pw-toggle" onclick="togglePw('pw','pwI')"><i class="ri-eye-off-line" id="pwI"></i></button>
+          </div>
+          <div class="pw-strength"><div class="pw-strength-fill" id="pwBar"></div></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <div class="input-wrap">
+            <i class="ri-lock-2-line input-icon"></i>
+            <input type="password" name="confirmPassword" class="form-ctrl" id="pw2" placeholder="Repeat password" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('pw2','pw2I')"><i class="ri-eye-off-line" id="pw2I"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="terms-row">
+        <input type="checkbox" name="terms" id="terms" required>
+        <label for="terms">I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a></label>
+      </div>
+
+      <button type="submit" class="submit-btn" id="regBtn">
+        <i class="ri-user-add-line"></i> Create My Account
+      </button>
+    </form>
+
+    <div class="login-link">Already have an account? <a href="/auth/login">Sign in</a></div>
+
+    <div class="perks">
+      <div class="perk"><i class="ri-flashlight-line"></i><span>Instant Delivery</span></div>
+      <div class="perk"><i class="ri-shield-check-line"></i><span>Secure & Safe</span></div>
+      <div class="perk"><i class="ri-gift-2-line"></i><span>Earn Cashback</span></div>
+    </div>
+  </div>
+</div>
+<script>
+function togglePw(f,i){const el=document.getElementById(f),ic=document.getElementById(i);el.type=el.type==='password'?'text':'password';ic.className=el.type==='password'?'ri-eye-off-line':'ri-eye-line'}
+function checkStrength(v){const bar=document.getElementById('pwBar');let s=0;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;const c=['#f05f6e','#f5a623','#22d3a5','#22d3a5'];bar.style.width=(s/4*100)+'%';bar.style.background=c[s-1]||'var(--border)'}
+document.getElementById('regForm').addEventListener('submit',function(){const btn=document.getElementById('regBtn');btn.disabled=true;btn.innerHTML='<i class="ri-loader-4-line" style="animation:spin 1s linear infinite"></i> Creating account...'})
+</script>
+</body>
+</html>
