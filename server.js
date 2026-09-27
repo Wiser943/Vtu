@@ -90,7 +90,7 @@ app.use('/user', require('./routes/user'));
 app.use('/reseller', require('./routes/reseller'));
 app.use('/admin', require('./routes/admin'));
 app.use('/api/webhook', require('./routes/webhook'));
-app.use('/api', require('./routes/api'));
+//app.use('/api', require('./routes/api'));
 
 // ─── PWA MANIFEST ───────────────────────────────────────────
 app.get('/manifest.json', (req, res) => {
